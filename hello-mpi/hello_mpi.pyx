@@ -15,18 +15,43 @@ import os
 #  4. no elasticity
 #  5. OpenMPI (and for GPU apps, CUDA-aware ompi)
 
-
 cdef extern from "hello_mpi_c.h" namespace "HelloMPI":
-    void mpi_run(int workerId, int nWorkers)
+    
+    cdef cppclass MpiWorldBuilder
+    
+    MpiWorldBuilder* mpi_run(int workerId, int nWorkers)
+    void mpi_init(int workerId)
+    int get_rank(MpiWorldBuilder *comm, int workerId)
+    void mpi_finalize(int workerId)
+    
+cdef class World:
+    
+    cdef MpiWorldBuilder *world
+    cdef int workerId
+    cdef int nWorkers
+    cdef int init_called
+    
+    def __cinit__(self, workerId, nWorkers):
+        self.workerId = workerId
+        self.nWorkers = nWorkers
+        self.init_called = 0
+        
+    def rank(self):
+        return get_rank(self.world, self.workerId)    
 
+    def init(self):
+        if self.init_called != 0:
+            print("Init has already been called!")
+        else:
+            self.world = mpi_run(self.workerId, self.nWorkers)
+            self.init_called = 1
 
-def run(nWorkers, ompiServerUri):
-    if ompiServerUri is None:
-        raise Exception("ompiServerUri is mandatory!")
-    os.environ["OMPI_MCA_pmix_server_uri"] = ompiServerUri
-    w = dask.distributed.get_worker()
-    print("Hello World! from ip=%s worker=%s/%d uri=%s" % \
-          (w.address, w.name, nWorkers, ompiServerUri))
-    workerId = int(w.name)
-    mpi_run(workerId, nWorkers)
-    print("Worker=%s finished" % w.name)
+    def finalize(self):
+        if self.init_called == 0:
+            print("Cannot finalize until init has been called")
+        else:
+            mpi_finalize(self.workerId)
+        
+    def __del__(self):
+        if self.init_called == 1:
+            self.finalize()
