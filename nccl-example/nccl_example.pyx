@@ -4,84 +4,72 @@
 # cython: language_level = 3
 
 import dask.distributed
+from libcpp cimport bool
 import re
 import os
 
 
-# Current set of assumptions:
-#  1. single node
-#  2. ports starting from 9000 to 9000+nWorkers is not already taken
-#  3. only once dask -> mpi hand-off per dask session is supported
-#  4. no elasticity
-#  5. OpenMPI (and for GPU apps, CUDA-aware ompi)
-
 cdef extern from "nccl_example_c.h" namespace "NCCLExample":
     
-    cdef cppclass NcclWorldBuilder:
-        NcclWorldBuilder(int wid, int num)
-        void init()
-        void destroy()
+    cdef cppclass NcclClique:
         int get_clique_size()
         int get_rank()
         int get_device()
-        void test_all_reduce()
+        bool test_all_reduce()
 
-    NcclWorldBuilder *create_builder(int workerId, int nWorkers, char *uid)
+    NcclClique *create_clique(int workerId, int nWorkers, char *uid)
     char* get_unique_id()
 
 
 def unique_id():
     cdef const char *uid = get_unique_id()
-
     c_str = uid[:127]
     return c_str
 
 
-cdef class NCCL_World:
+cdef class NCCL_Clique:
     
-    cdef NcclWorldBuilder *world
+    cdef NcclClique *world
     cdef int workerId
     cdef int nWorkers
-    cdef int init_called
-    
+
     def __cinit__(self, workerId, nWorkers):
         self.workerId = workerId
         self.nWorkers = nWorkers
-        self.init_called = 0
+        self.world = NULL
 
 
-    def create_builder(self, uniqueId):
+    def create_clique(self, uniqueId):
         cdef char * uid = uniqueId
-        if self.init_called != 0:
-            print("Cannot initialize more than once")
+        if self.world is not NULL:
+            del self.world
+            self.world = NULL
         else:
-
-            self.world = create_builder(self.workerId, self.nWorkers, uid)
-            self.world.init()
-            self.init_called = 1
+            self.world = create_clique(self.workerId, self.nWorkers, uid)
 
     def get_clique_size(self):
-        if self.init_called == 0:
+        if self.world == NULL:
             print("Must initialize before getting size")
         else:
             return self.world.get_clique_size()
 
     def get_rank(self):
-        if self.init_called == 0:
+        if self.world == NULL:
             print("Must initialize before getting size")
         else:
             return self.world.get_rank()
 
     def get_device(self):
-        if self.init_called == 0:
+        if self.world == NULL:
             print("Must initialize before getting size")
         else:
             return self.world.get_device()
 
     def test_all_reduce(self):
-        self.world.test_all_reduce();
-
+        if self.world == NULL:
+            print("Must initialize before getting size")
+        else:
+           return self.world.test_all_reduce();
 
     def __del__(self):
-        if self.init_called == 1:
-            self.world.destroy()
+        del self.world
