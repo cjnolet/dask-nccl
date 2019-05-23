@@ -8,6 +8,7 @@
 #include "nccl.h"
 #include <unistd.h>
 #include <stdint.h>
+#include <iostream>
 
 #define THROW(fmt, ...)                                         \
     do {                                                        \
@@ -105,15 +106,24 @@ public:
 
     void test_all_reduce() {
 
-      int size = 32*1024*1024;
+      int size = 10;
 
       float *sendbuf, *recvbuff;
       cudaStream_t s;
 
       cudaStreamCreate(&s);
 
-      cudaMalloc(&sendbuf, size * sizeof(float));
-      cudaMalloc(&recvbuff, size * sizeof(float));
+      cudaMalloc((void**)&sendbuf, size * sizeof(float));
+      cudaMalloc((void**)&recvbuff, size * sizeof(float));
+
+      cudaMemset(sendbuf, 0, size * sizeof(float));
+      cudaMemset(recvbuff, 0, size * sizeof(float));
+
+      float *res = (float*)malloc(size*sizeof(float));
+      cudaMemcpy(res, sendbuf, size*sizeof(float), cudaMemcpyDeviceToHost);
+
+      print(res, size);
+      free(res);
 
       CHECK_NCCL(ncclAllReduce((const void*)sendbuf, (void*)recvbuff, size, ncclFloat, ncclSum, intracomm, s));
 
@@ -121,8 +131,27 @@ public:
 
       printf("Allreduce completed successfully on %d\n", get_rank());
 
+      float *result_host = (float*)malloc(size*sizeof(float));
+      cudaMemcpy(result_host, recvbuff, size*sizeof(float), cudaMemcpyDeviceToHost);
+
+      print(result_host, size);
+
+      free(result_host);
+
       cudaFree(sendbuf);
       cudaFree(recvbuff);
+    }
+
+    void print(float *arr, int size) {
+      std::cout << "output=[";
+      for(int i = 0; i < size; i++) {
+        std::cout << arr[i] << " ";
+
+        if(i < size-1)
+          std::cout << ', ';
+      }
+
+      std::cout << "]" << std::endl;
     }
 
 private:
