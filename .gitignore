@@ -1,7 +1,10 @@
 *.pyc
 build
-hello_mpi.cpp
+nccl_example.cpp
 __pycache__
 global.lock
 purge.lock
 worker-*
+.ipynb_checkpoints/
+.project
+.cproject
