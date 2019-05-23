@@ -24,10 +24,19 @@ cdef extern from "nccl_example_c.h" namespace "NCCLExample":
         int get_clique_size()
         int get_rank()
         int get_device()
+        void test_all_reduce()
 
     NcclWorldBuilder *create_builder(int workerId, int nWorkers, char *uid)
     char* get_unique_id()
-    
+
+
+def unique_id():
+    cdef const char *uid = get_unique_id()
+
+    c_str = uid[:127]
+    return c_str
+
+
 cdef class NCCL_World:
     
     cdef NcclWorldBuilder *world
@@ -69,11 +78,8 @@ cdef class NCCL_World:
         else:
             return self.world.get_device()
 
-    def unique_id(self):
-        uid = get_unique_id()
-        return uid
-
-
+    def test_all_reduce(self):
+        self.world.test_all_reduce();
 
 
     def __del__(self):

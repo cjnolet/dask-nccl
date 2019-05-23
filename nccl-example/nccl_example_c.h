@@ -51,10 +51,6 @@ class NcclWorldBuilder {
     
 public:
 
-        
-    /** comm handle for all the connected processes so far */
-    ncclComm_t intracomm;
-    ncclUniqueId uniqueId;
 
     /**
      * @brief ctor
@@ -62,7 +58,7 @@ public:
      * @param numWorkers number of workers
      */
     NcclWorldBuilder(int wid, int numWorkers, ncclUniqueId id):
-        workerId(wid), nWorkers(numWorkers), portName(), uniqueId(id) {
+        workerId(wid), nWorkers(numWorkers), uniqueId(id) {
                 printf("Creating world builder with uniqueId=%s\n", id.internal);
 
         }
@@ -107,19 +103,43 @@ public:
       return device;
     }
 
+    void test_all_reduce() {
+
+      int size = 32*1024*1024;
+
+      float *sendbuf, *recvbuff;
+      cudaStream_t s;
+
+      cudaStreamCreate(&s);
+
+      cudaMalloc(&sendbuf, size * sizeof(float));
+      cudaMalloc(&recvbuff, size * sizeof(float));
+
+      CHECK_NCCL(ncclAllReduce((const void*)sendbuf, (void*)recvbuff, size, ncclFloat, ncclSum, intracomm, s));
+
+      cudaStreamSynchronize(s);
+
+      printf("Allreduce completed successfully on %d\n", get_rank());
+
+      cudaFree(sendbuf);
+      cudaFree(recvbuff);
+    }
 
 private:
+
+    /** comm handle for all the connected processes so far */
+    ncclComm_t intracomm;
+    ncclUniqueId uniqueId;
+
 
     /** current dask worker ID received from python world */
     int workerId;
     /** number of workers */
     int nWorkers;
-    /** port name returned by MPI_Open_port */
-    std::string portName;
 };
 
-NcclWorldBuilder *create_builder(int workerId, int nWorkers, char *uid);
+NcclWorldBuilder *create_builder(int workerId, int nWorkers, const char *uid);
 
-char *get_unique_id();
+const char *get_unique_id();
 
 }; // end namespace HelloMPI

@@ -8,16 +8,16 @@
 namespace NCCLExample {
 
 
-NcclWorldBuilder *create_builder(int workerId, int nWorkers, char *uniqueId) {
+NcclWorldBuilder *create_builder(int workerId, int nWorkers, const char *uniqueId) {
 
     ncclUniqueId id;
-    strncpy(id.internal, uniqueId, NCCL_UNIQUE_ID_BYTES);
+    memcpy(id.internal, uniqueId, NCCL_UNIQUE_ID_BYTES);
 
     NcclWorldBuilder *builder = new NcclWorldBuilder(workerId, nWorkers, id);
     return builder;
 }
 
-char* get_unique_id() {
+const char* get_unique_id() {
 
   ncclUniqueId id;
   ncclGetUniqueId(&id);
@@ -28,5 +28,7 @@ char* get_unique_id() {
 
   return newchar;
 }
+
+
 
 } // end namespace HelloMPI
