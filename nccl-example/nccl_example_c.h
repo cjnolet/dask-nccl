@@ -145,7 +145,6 @@ public:
     ~NcclClique() {
         if(workerId == 0) {
             printf("worker=%d: server closing port\n", workerId);
-            destroy();
             delete handle;
         }
     }
@@ -161,6 +160,8 @@ public:
           printf("Clique size on worker=%d successfully verified to be %d\n", workerId, nWorkers);
       else
           printf("Clique construction was not successful. Size on worker=%d verified to be %d, but should have been %d\n", workerId, count, nWorkers);
+
+
       return count;
     }
 
@@ -175,6 +176,21 @@ public:
 
     const ML::cumlHandle *get_handle() const {
         return handle;
+    }
+
+    /**
+     * @brief returns the GPU device number of the current worker
+     * in the clique. Note that when this is used with Dask and
+     * the LocalCUDACluster, it should always return 0, as that
+     * will be the first device ordinal from the CUDA_VISIBLE_DEVICES
+     * environment variable.
+     */
+    int get_device() const {
+
+      // TODO: This is going straight to the comm here.
+      int device;
+      NCCL_CHECK(ncclCommCuDevice(comm, &device));
+      return device;
     }
 
     /**
@@ -242,7 +258,7 @@ public:
 
         if(i < size-1)
             std::cout << ", ";
-    }
+        }
 
         std::cout << "]" << std::endl;
         free(res);
@@ -299,13 +315,6 @@ private:
     int workerId;
     /** number of workers */
     int nWorkers;
-
-    /**
-     * @brief destroys the communicator for the nccl clique
-     */
-    void destroy() {
-      NCCL_CHECK(ncclCommDestroy(comm));
-    }
 };
 
 NcclClique *create_clique(int workerId, int nWorkers, const char *uid);
