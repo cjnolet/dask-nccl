@@ -2,6 +2,12 @@
 
 #include <iostream>
 
+#include <cuML.hpp>
+#include <cuML_comms.hpp>
+
+#include <common/cumlHandle.hpp>
+#include <common/cuml_comms_int.hpp>
+
 #include <nccl.h>
 
 #include <execinfo.h>
@@ -121,7 +127,6 @@ class NcclClique {
     
 public:
 
-
     /**
      * @param wid the worker id
      * @param numWorkers the number of workers in the clique
@@ -129,31 +134,33 @@ public:
      */
     NcclClique(int wid, int numWorkers, ncclUniqueId id):
         workerId(wid), nWorkers(numWorkers), uniqueId(id) {
-                printf("Creating world builder with uniqueId=%s\n", id.internal);
-                init();
-        }
+            printf("Creating world builder with uniqueId=%s\n", id.internal);
+
+        handle = new ML::cumlHandle();
+        initialize_comms(*handle, comm, nWorkers, workerId, id);
+
+        communicator = &handle->getImpl().getCommunicator();
+    }
 
     ~NcclClique() {
         if(workerId == 0) {
             printf("worker=%d: server closing port\n", workerId);
             destroy();
+            delete handle;
         }
     }
 
     /**
      * @brief returns the number of ranks in the current clique
      */
-    int get_clique_size() {
+    int get_clique_size() const {
 
-      int count;
-      NCCL_CHECK(ncclCommCount(comm, &count));
+      int count  = communicator->getSize();
 
       if(count == nWorkers)
           printf("Clique size on worker=%d successfully verified to be %d\n", workerId, nWorkers);
       else
           printf("Clique construction was not successful. Size on worker=%d verified to be %d, but should have been %d\n", workerId, count, nWorkers);
-
-
       return count;
     }
 
@@ -161,23 +168,13 @@ public:
     /**
      * @brief returns the rank of the current worker in the clique
      */
-    int get_rank() {
-      int rank;
-      NCCL_CHECK(ncclCommUserRank(comm, &rank));
+    int get_rank() const {
+      int rank = communicator->getRank();
       return rank;
     }
 
-    /**
-     * @brief returns the GPU device number of the current worker
-     * in the clique. Note that when this is used with Dask and
-     * the LocalCUDACluster, it should always return 0, as that
-     * will be the first device ordinal from the CUDA_VISIBLE_DEVICES
-     * environment variable.
-     */
-    int get_device() {
-      int device;
-      NCCL_CHECK(ncclCommCuDevice(comm, &device));
-      return device;
+    const ML::cumlHandle *get_handle() const {
+        return handle;
     }
 
     /**
@@ -208,7 +205,7 @@ public:
 
       print(sendbuf, size, "sent", s);
 
-      NCCL_CHECK(ncclAllReduce((const void*)sendbuf, (void*)recvbuff, size, ncclFloat, ncclSum, comm, s));
+      communicator->allreduce((const void*)sendbuf, (void*)recvbuff, size, MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, s);
 
       CUDA_CHECK(cudaStreamSynchronize(s));
 
@@ -245,7 +242,7 @@ public:
 
         if(i < size-1)
             std::cout << ", ";
-        }
+    }
 
         std::cout << "]" << std::endl;
         free(res);
@@ -290,21 +287,18 @@ public:
 private:
 
     /** comm handle for all the connected processes so far */
+
     ncclComm_t comm;
     ncclUniqueId uniqueId;
+
+
+    ML::cumlHandle *handle;
+    const MLCommon::cumlCommunicator *communicator;
 
     /** current dask worker ID received from python world */
     int workerId;
     /** number of workers */
     int nWorkers;
-
-    /**
-     * @brief Initializes the communicator for the nccl clique
-     */
-    void init() {
-      NCCL_CHECK(ncclCommInitRank(&comm, nWorkers, uniqueId, workerId));
-      printf("Init called on worker=%d\n", workerId);
-    }
 
     /**
      * @brief destroys the communicator for the nccl clique

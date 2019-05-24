@@ -14,7 +14,6 @@ cdef extern from "nccl_example_c.h" namespace "NCCLExample":
     cdef cppclass NcclClique:
         int get_clique_size()
         int get_rank()
-        int get_device()
         bool test_all_reduce()
 
     NcclClique *create_clique(int workerId, int nWorkers, char *uid)
@@ -40,6 +39,8 @@ cdef class NCCL_Clique:
 
 
     def create_clique(self, uniqueId):
+
+        print(len(uniqueId))
         cdef char * uid = uniqueId
         if self.world is not NULL:
             del self.world
@@ -58,12 +59,6 @@ cdef class NCCL_Clique:
             print("Must initialize before getting size")
         else:
             return self.world.get_rank()
-
-    def get_device(self):
-        if self.world == NULL:
-            print("Must initialize before getting size")
-        else:
-            return self.world.get_device()
 
     def test_all_reduce(self):
         if self.world == NULL:

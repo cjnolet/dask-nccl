@@ -1,12 +1,17 @@
 #include "nccl_example_c.h"
 
+#include <cuML.hpp>
+#include <cuML_comms.hpp>
+
+#include <common/cumlHandle.hpp>
+#include <common/cuml_comms_int.hpp>
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string>
 #include <stdexcept>
 
 namespace NCCLExample {
-
 
 /**
  * @brief Factory function to build a NCCL clique. This function is meant to be
@@ -19,8 +24,15 @@ namespace NCCLExample {
  */
 NcclClique *create_clique(int workerId, int nWorkers, const char *uniqueId) {
 
+    printf("Creating clique with worker=%d\n", workerId);
+
     ncclUniqueId id;
     memcpy(id.internal, uniqueId, NCCL_UNIQUE_ID_BYTES);
+
+    /**
+     * The following is meant to mimic the hand-off to an algorithm
+     */
+    printf("Done initializing clique for worker=%d\n", workerId);
 
     NcclClique *builder = new NcclClique(workerId, nWorkers, id);
     return builder;
