@@ -132,12 +132,9 @@ public:
      * @param numWorkers the number of workers in the clique
      * @param id the nccl unique id for the clique
      */
-    NcclClique(int wid, int numWorkers, ncclUniqueId id):
-        workerId(wid), nWorkers(numWorkers), uniqueId(id) {
+    NcclClique(ML::cumlHandle *handle, int wid, int numWorkers, ncclUniqueId id):
+        workerId(wid), nWorkers(numWorkers), uniqueId(id), handle(handle) {
             printf("Creating world builder with uniqueId=%s\n", id.internal);
-
-        handle = new ML::cumlHandle();
-        initialize_comms(*handle, comm, nWorkers, workerId, id);
 
         communicator = &handle->getImpl().getCommunicator();
     }
@@ -178,20 +175,6 @@ public:
         return handle;
     }
 
-    /**
-     * @brief returns the GPU device number of the current worker
-     * in the clique. Note that when this is used with Dask and
-     * the LocalCUDACluster, it should always return 0, as that
-     * will be the first device ordinal from the CUDA_VISIBLE_DEVICES
-     * environment variable.
-     */
-    int get_device() const {
-
-      // TODO: This is going straight to the comm here.
-      int device;
-      NCCL_CHECK(ncclCommCuDevice(comm, &device));
-      return device;
-    }
 
     /**
      * @brief a simple validation that we can perform a collective
@@ -304,7 +287,6 @@ private:
 
     /** comm handle for all the connected processes so far */
 
-    ncclComm_t comm;
     ncclUniqueId uniqueId;
 
 

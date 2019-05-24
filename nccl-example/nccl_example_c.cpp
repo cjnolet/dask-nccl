@@ -24,18 +24,25 @@ namespace NCCLExample {
  */
 NcclClique *create_clique(int workerId, int nWorkers, const char *uniqueId) {
 
-    printf("Creating clique with worker=%d\n", workerId);
-
     ncclUniqueId id;
     memcpy(id.internal, uniqueId, NCCL_UNIQUE_ID_BYTES);
 
     /**
-     * The following is meant to mimic the hand-off to an algorithm
+     * The following is meant to mimic the hand-off to an algorithm.
+     *
+     * Ideally, the cumlHandle would be passed into some helper function
+     * to create and initialize the NCCL comms and the cumlHandle, itself,
+     * passed into the follow-on algorithm to perform the MNMG work.
      */
-    printf("Done initializing clique for worker=%d\n", workerId);
+    ML::cumlHandle *handle = new ML::cumlHandle();
+    ncclComm_t comm;
+    initialize_comms(*handle, comm, nWorkers, workerId, id);
 
-    NcclClique *builder = new NcclClique(workerId, nWorkers, id);
-    return builder;
+    /**
+     * A NcclClique mimicks the algorithm, which would use the cumlCommunicator
+     * from the cumlHandle and perform the necessary collective comms.
+     */
+    return new NcclClique(handle, workerId, nWorkers, id);
 }
 
 /**
