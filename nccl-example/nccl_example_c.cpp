@@ -11,6 +11,9 @@
 #include <string>
 #include <stdexcept>
 
+#include <iostream>
+
+
 namespace NCCLExample {
 
 /**
@@ -24,24 +27,17 @@ namespace NCCLExample {
  */
 NcclClique *create_clique(int workerId, int nWorkers, const char *uniqueId) {
 
+    printf("Creating clique with worker=%d\n", workerId);
+
+    std::cout << "uniqueId in cpp: " << uniqueId << std::endl;
+
     ncclUniqueId id;
     memcpy(id.internal, uniqueId, NCCL_UNIQUE_ID_BYTES);
 
-    /**
-     * The following is meant to mimic the hand-off to an algorithm.
-     *
-     * Ideally, the cumlHandle would be passed into some helper function
-     * to create and initialize the NCCL comms and the cumlHandle, itself,
-     * passed into the follow-on algorithm to perform the MNMG work.
-     */
-    ML::cumlHandle *handle = new ML::cumlHandle();
+    ML::cumlHandle *handle = new ML::cumlHandle(); // in this example, the NcclClique will take ownership of handle.
     ncclComm_t comm;
     initialize_comms(*handle, comm, nWorkers, workerId, id);
 
-    /**
-     * A NcclClique mimicks the algorithm, which would use the cumlCommunicator
-     * from the cumlHandle and perform the necessary collective comms.
-     */
     return new NcclClique(handle, workerId, nWorkers, id);
 }
 
@@ -63,6 +59,51 @@ const char* get_unique_id() {
   // with an `internal` field.
   char* newchar = id.internal;
   return newchar;
+}
+    
+bool perform_reduce_on_partition(const ML::cumlHandle &handle, float *input, int M, int N, int n_workers, int root_rank) {
+    
+    const MLCommon::cumlCommunicator *communicator = &handle.getImpl().getCommunicator();
+    
+    int rank = communicator->getRank();
+
+    int num_bytes = M*N * sizeof(float);
+
+    float *sendbuf = input, *recvbuff;
+    cudaStream_t s;
+
+    CUDA_CHECK(cudaStreamCreate(&s));
+
+    if(rank == root_rank) {
+      CUDA_CHECK(cudaMalloc((void**)&recvbuff, num_bytes));
+      init_dev_arr<float>(recvbuff, M*N, 0.0f, s);
+    }
+
+    print(sendbuf, M*N, "sent", s);
+
+    communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N*sizeof(float),
+        MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, root_rank, s);
+
+    CUDA_CHECK(cudaStreamSynchronize(s));
+
+    print(recvbuff, M*N, "received", s);
+
+    bool verify = true;
+    if(rank == root_rank) {
+      verify_dev_arr(recvbuff, M*N, (float)n_workers, s);
+      if(verify)
+        printf("allReduce completed successfully on %d. Received values verified to be %d\n", rank, n_workers);
+      else
+        printf("allReduce did not contain the expected values [%d] on %d\n", n_workers, rank);
+    }
+
+
+    CUDA_CHECK(cudaFree(sendbuf));
+
+    if(rank == root_rank)
+      CUDA_CHECK(cudaFree(recvbuff));
+
+    return verify;
 }
 
 

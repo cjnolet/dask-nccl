@@ -8,6 +8,10 @@ from libcpp cimport bool
 import re
 import os
 
+from libc.stdint cimport uintptr_t
+
+import cudf
+
 
 cdef extern from "nccl_example_c.h" namespace "NCCLExample":
     
@@ -15,16 +19,16 @@ cdef extern from "nccl_example_c.h" namespace "NCCLExample":
         int get_clique_size()
         int get_rank()
         bool test_all_reduce()
+        bool perform_reduce_on_partition(float * inp, int M, int N, int root_rank)
+
 
     NcclClique *create_clique(int workerId, int nWorkers, char *uid)
     char* get_unique_id()
-
 
 def unique_id():
     cdef const char *uid = get_unique_id()
     c_str = uid[:127]
     return c_str
-
 
 cdef class NCCL_Clique:
     
@@ -65,6 +69,19 @@ cdef class NCCL_Clique:
             print("Must initialize before getting size")
         else:
            return self.world.test_all_reduce();
+
+    def test_on_partition(self, df, root_rank):
+
+        cdef object X_m = df.as_gpu_matrix()
+        cdef uintptr_t X_ctype = X_m.device_ctypes_pointer.value
+
+        cdef int m = X_m.shape[0]
+        cdef int n = X_m.shape[1]
+
+        self.world.perform_reduce_on_partition(<float*>X_ctype,
+                                        <int>m,
+                                        <int>n,
+                                        <int>root_rank)
 
     def __del__(self):
         del self.world

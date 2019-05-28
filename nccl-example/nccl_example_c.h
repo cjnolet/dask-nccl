@@ -19,6 +19,8 @@
 
 #include <unistd.h>
 
+#include "util.h"
+
 /** base exception class for the cuML or ml-prims project */
 class Exception : public std::exception {
 public:
@@ -224,63 +226,48 @@ public:
 
     }
 
-    /**
-     * @brief simple utility function to print an array of floats
-     * that lives on the host.
-     */
-    template<typename T>
-    void print(T *arr, int size, std::string name, cudaStream_t s) {
+    bool perform_reduce_on_partition(float *input, int M, int N, int root_rank) {
 
-    float *res = (T*)malloc(size*sizeof(T));
-    CUDA_CHECK(cudaMemcpyAsync(res, arr, size*sizeof(T), cudaMemcpyDeviceToHost, s));
-    CUDA_CHECK(cudaStreamSynchronize(s));
+        int n_workers = nWorkers;
+        int rank = communicator->getRank();
 
-    std::cout << name << " = [";
-    for(int i = 0; i < size; i++) {
-        std::cout << res[i] << " ";
+        int num_bytes = M*N * sizeof(float);
 
-        if(i < size-1)
-            std::cout << ", ";
+        float *sendbuf = input, *recvbuff;
+        cudaStream_t s;
+
+        CUDA_CHECK(cudaStreamCreate(&s));
+
+        if(rank == root_rank) {
+          CUDA_CHECK(cudaMalloc((void**)&recvbuff, num_bytes));
+          init_dev_arr<float>(recvbuff, M*N, 0.0f, s);
         }
 
-        std::cout << "]" << std::endl;
-        free(res);
-    }
+        print(sendbuf, M*N, "sent", s);
 
-    /**
-     * @brief simple utility function to initialize all the items in a device
-     * array to the given value.
-     */
-    template<typename T>
-    void init_dev_arr(T *devArr, int size, T value, cudaStream_t s) {
-        T *h_init = (T*)malloc(size * sizeof(T));
-        for(int i = 0; i < size; i++)
-            h_init[i] = value;
-        CUDA_CHECK(cudaMemcpyAsync(devArr, h_init, size*sizeof(T), cudaMemcpyHostToDevice, s));
-        CUDA_CHECK(cudaStreamSynchronize(s));
-        free(h_init);
-    }
+        communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N*sizeof(float),
+            MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, root_rank, s);
 
-    /**
-     * @brief simple utility function to verify all the items in a device
-     * array equal the given value.
-     */
-    template<typename T>
-    bool verify_dev_arr(T *devArr, int size, T value, cudaStream_t s) {
-
-        bool ret = true;
-
-        T *h_init = (T*)malloc(size * sizeof(T));
-        CUDA_CHECK(cudaMemcpyAsync(h_init, devArr, size*sizeof(T), cudaMemcpyDeviceToHost, s));
         CUDA_CHECK(cudaStreamSynchronize(s));
 
-        for(int i = 0; i < size; i++)
-            if(h_init[i] != value)
-                ret = false;
+        print(recvbuff, M*N, "received", s);
 
-        free(h_init);
+        bool verify = true;
+        if(rank == root_rank) {
+          verify_dev_arr(recvbuff, M*N, (float)n_workers, s);
+          if(verify)
+            printf("allReduce completed successfully on %d. Received values verified to be %d\n", rank, n_workers);
+          else
+            printf("allReduce did not contain the expected values [%d] on %d\n", n_workers, rank);
+        }
 
-        return ret;
+
+        CUDA_CHECK(cudaFree(sendbuf));
+
+        if(rank == root_rank)
+          CUDA_CHECK(cudaFree(recvbuff));
+
+        return verify;
     }
 
 private:
@@ -302,5 +289,7 @@ private:
 NcclClique *create_clique(int workerId, int nWorkers, const char *uid);
 
 const char *get_unique_id();
+
+
 
 }; // end namespace HelloMPI
