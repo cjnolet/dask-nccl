@@ -22,7 +22,6 @@ cdef extern from "nccl_example_c.h" namespace "NCCLExample":
         bool test_all_reduce()
         bool perform_reduce_on_partition(float * inp, int M, int N, int root_rank)
 
-
     NcclClique *create_clique(int workerId, int nWorkers, char *uid)
     void get_unique_id(char *uid)
 
@@ -30,7 +29,6 @@ def unique_id():
     cdef char *uid = <char *> malloc(128 * sizeof(char))
     get_unique_id(uid)
     c_str = uid[:127]
-
     free(uid)
     return c_str
 
@@ -82,7 +80,7 @@ cdef class NCCL_Clique:
         cdef int m = X_m.shape[0]
         cdef int n = X_m.shape[1]
 
-        self.world.perform_reduce_on_partition(<float*>X_ctype,
+        return self.world.perform_reduce_on_partition(<float*>X_ctype,
                                         <int>m,
                                         <int>n,
                                         <int>root_rank)
