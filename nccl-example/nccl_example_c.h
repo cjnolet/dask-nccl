@@ -292,4 +292,4 @@ void get_unique_id(char *uid);
 
 
 
-}; // end namespace HelloMPI
+}; // end namespace NCCLExample
