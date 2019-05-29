@@ -226,22 +226,15 @@ public:
 
     }
 
-    bool perform_reduce_on_partition(float *input, int M, int N, int root_rank) {
+    bool perform_reduce_on_partition(float *sendbuf, int M, int N, int root_rank, float *recvbuff) {
 
         int n_workers = nWorkers;
         int rank = communicator->getRank();
 
         int num_bytes = M*N * sizeof(float);
 
-        float *sendbuf = input, *recvbuff;
         cudaStream_t s;
-
         CUDA_CHECK(cudaStreamCreate(&s));
-
-        if(rank == root_rank) {
-          CUDA_CHECK(cudaMalloc((void**)&recvbuff, num_bytes));
-          init_dev_arr<float>(recvbuff, M*N, 0.0f, s);
-        }
 
         communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N,
             MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, root_rank, s);
@@ -256,12 +249,6 @@ public:
           else
             printf("Reduce on partition did not contain the expected values [%d] on %d\n", n_workers, rank);
         }
-
-
-        CUDA_CHECK(cudaFree(sendbuf));
-
-        if(rank == root_rank)
-          CUDA_CHECK(cudaFree(recvbuff));
 
         return verify;
     }

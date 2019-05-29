@@ -20,7 +20,7 @@ cdef extern from "nccl_example_c.h" namespace "NCCLExample":
         int get_clique_size()
         int get_rank()
         bool test_all_reduce()
-        bool perform_reduce_on_partition(float * inp, int M, int N, int root_rank)
+        bool perform_reduce_on_partition(float * inp, int M, int N, int root_rank, float *output)
 
     NcclClique *create_clique(int workerId, int nWorkers, char *uid)
     void get_unique_id(char *uid)
@@ -72,18 +72,21 @@ cdef class NCCL_Clique:
         else:
            return self.world.test_all_reduce();
 
-    def test_on_partition(self, df, root_rank):
+    def test_on_partition(self, df, root_rank, out_gpu_mat):
 
         cdef object X_m = df.as_gpu_matrix()
         cdef uintptr_t X_ctype = X_m.device_ctypes_pointer.value
-
+        
+        cdef uintptr_t out_ctype = out_gpu_mat.device_ctypes_pointer.value
+        
         cdef int m = X_m.shape[0]
         cdef int n = X_m.shape[1]
 
         return self.world.perform_reduce_on_partition(<float*>X_ctype,
                                         <int>m,
                                         <int>n,
-                                        <int>root_rank)
+                                        <int>root_rank,
+                                        <float*>out_ctype)
 
     def __del__(self):
         del self.world
