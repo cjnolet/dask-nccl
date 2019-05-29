@@ -4,6 +4,11 @@ from toolz import first
 import logging
 import dask.dataframe as dd
 
+import dask_cudf
+import numpy as np
+import cudf
+import pandas as pd
+
 from dask.distributed import wait
 
 
@@ -89,3 +94,10 @@ def _get_mg_info(ddf):
     yield wait(gpu_data)
 
     raise gen.Return((gpu_data, cols))
+    
+def gen_dask_cudf(m, n, demo):
+    """Generates a large Dask cuDF initialized to all 1's (for verifying reduction op)"""
+    n_workers = demo.get_clique_size()[0]
+    X = np.ones((m*n_workers, n), dtype = np.float32)
+    X = cudf.DataFrame.from_pandas(pd.DataFrame({'fea%d' % i: X[0:, i] for i in range(X.shape[1])}))
+    return dask_cudf.from_cudf(X, npartitions = n_workers)
