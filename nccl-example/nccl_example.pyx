@@ -5,6 +5,7 @@
 
 import dask.distributed
 from libcpp cimport bool
+from libc.stdlib cimport malloc, free
 import re
 import os
 
@@ -23,11 +24,14 @@ cdef extern from "nccl_example_c.h" namespace "NCCLExample":
 
 
     NcclClique *create_clique(int workerId, int nWorkers, char *uid)
-    char* get_unique_id()
+    void get_unique_id(char *uid)
 
 def unique_id():
-    cdef const char *uid = get_unique_id()
+    cdef char *uid = <char *> malloc(128 * sizeof(char))
+    get_unique_id(uid)
     c_str = uid[:127]
+
+    free(uid)
     return c_str
 
 cdef class NCCL_Clique:

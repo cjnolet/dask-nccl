@@ -50,62 +50,14 @@ NcclClique *create_clique(int workerId, int nWorkers, const char *uniqueId) {
  * @returns the generated NCCL unique ID for establishing a
  * new clique.
  */
-const char* get_unique_id() {
+void get_unique_id(char *uid) {
 
   ncclUniqueId id;
   ncclGetUniqueId(&id);
 
-  // NCCL's uniqueId type is just a struct
-  // with an `internal` field.
-  char* newchar = id.internal;
-  return newchar;
+  memcpy(uid, id.internal, NCCL_UNIQUE_ID_BYTES);
 }
     
-bool perform_reduce_on_partition(const ML::cumlHandle &handle, float *input, int M, int N, int n_workers, int root_rank) {
-    
-    const MLCommon::cumlCommunicator *communicator = &handle.getImpl().getCommunicator();
-    
-    int rank = communicator->getRank();
-
-    int num_bytes = M*N * sizeof(float);
-
-    float *sendbuf = input, *recvbuff;
-    cudaStream_t s;
-
-    CUDA_CHECK(cudaStreamCreate(&s));
-
-    if(rank == root_rank) {
-      CUDA_CHECK(cudaMalloc((void**)&recvbuff, num_bytes));
-      init_dev_arr<float>(recvbuff, M*N, 0.0f, s);
-    }
-
-    print(sendbuf, M*N, "sent", s);
-
-    communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N*sizeof(float),
-        MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, root_rank, s);
-
-    CUDA_CHECK(cudaStreamSynchronize(s));
-
-    print(recvbuff, M*N, "received", s);
-
-    bool verify = true;
-    if(rank == root_rank) {
-      verify_dev_arr(recvbuff, M*N, (float)n_workers, s);
-      if(verify)
-        printf("allReduce completed successfully on %d. Received values verified to be %d\n", rank, n_workers);
-      else
-        printf("allReduce did not contain the expected values [%d] on %d\n", n_workers, rank);
-    }
-
-
-    CUDA_CHECK(cudaFree(sendbuf));
-
-    if(rank == root_rank)
-      CUDA_CHECK(cudaFree(recvbuff));
-
-    return verify;
-}
-
 
 
 } // end namespace HelloMPI

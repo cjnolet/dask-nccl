@@ -243,22 +243,22 @@ public:
           init_dev_arr<float>(recvbuff, M*N, 0.0f, s);
         }
 
-        print(sendbuf, M*N, "sent", s);
+//        print(sendbuf, M*N, "sent", s);
 
         communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N*sizeof(float),
             MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, root_rank, s);
 
         CUDA_CHECK(cudaStreamSynchronize(s));
 
-        print(recvbuff, M*N, "received", s);
+//        print(recvbuff, M*N, "received", s);
 
         bool verify = true;
         if(rank == root_rank) {
           verify_dev_arr(recvbuff, M*N, (float)n_workers, s);
           if(verify)
-            printf("allReduce completed successfully on %d. Received values verified to be %d\n", rank, n_workers);
+            printf("Reduce on partition completed successfully on %d. Received values verified to be %d\n", rank, n_workers);
           else
-            printf("allReduce did not contain the expected values [%d] on %d\n", n_workers, rank);
+            printf("Reduce on partition did not contain the expected values [%d] on %d\n", n_workers, rank);
         }
 
 
@@ -288,7 +288,7 @@ private:
 
 NcclClique *create_clique(int workerId, int nWorkers, const char *uid);
 
-const char *get_unique_id();
+void get_unique_id(char *uid);
 
 
 
