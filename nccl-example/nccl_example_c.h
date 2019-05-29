@@ -243,14 +243,10 @@ public:
           init_dev_arr<float>(recvbuff, M*N, 0.0f, s);
         }
 
-//        print(sendbuf, M*N, "sent", s);
-
-        communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N*sizeof(float),
+        communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N,
             MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, root_rank, s);
 
         CUDA_CHECK(cudaStreamSynchronize(s));
-
-//        print(recvbuff, M*N, "received", s);
 
         bool verify = true;
         if(rank == root_rank) {
