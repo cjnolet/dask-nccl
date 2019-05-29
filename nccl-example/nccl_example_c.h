@@ -2,6 +2,12 @@
 
 #include <iostream>
 
+#include <cuML.hpp>
+#include <cuML_comms.hpp>
+
+#include <common/cumlHandle.hpp>
+#include <common/cuml_comms_int.hpp>
+
 #include <nccl.h>
 
 #include <execinfo.h>
@@ -12,6 +18,8 @@
 #include <stdexcept>
 
 #include <unistd.h>
+
+#include "util.h"
 
 /** base exception class for the cuML or ml-prims project */
 class Exception : public std::exception {
@@ -121,32 +129,31 @@ class NcclClique {
     
 public:
 
-
     /**
      * @param wid the worker id
      * @param numWorkers the number of workers in the clique
      * @param id the nccl unique id for the clique
      */
-    NcclClique(int wid, int numWorkers, ncclUniqueId id):
-        workerId(wid), nWorkers(numWorkers), uniqueId(id) {
-                printf("Creating world builder with uniqueId=%s\n", id.internal);
-                init();
-        }
+    NcclClique(ML::cumlHandle *handle, int wid, int numWorkers, ncclUniqueId id):
+        workerId(wid), nWorkers(numWorkers), uniqueId(id), handle(handle) {
+            printf("Creating world builder with uniqueId=%s\n", id.internal);
+
+        communicator = &handle->getImpl().getCommunicator();
+    }
 
     ~NcclClique() {
         if(workerId == 0) {
             printf("worker=%d: server closing port\n", workerId);
-            destroy();
+            delete handle;
         }
     }
 
     /**
      * @brief returns the number of ranks in the current clique
      */
-    int get_clique_size() {
+    int get_clique_size() const {
 
-      int count;
-      NCCL_CHECK(ncclCommCount(comm, &count));
+      int count  = communicator->getSize();
 
       if(count == nWorkers)
           printf("Clique size on worker=%d successfully verified to be %d\n", workerId, nWorkers);
@@ -161,24 +168,15 @@ public:
     /**
      * @brief returns the rank of the current worker in the clique
      */
-    int get_rank() {
-      int rank;
-      NCCL_CHECK(ncclCommUserRank(comm, &rank));
+    int get_rank() const {
+      int rank = communicator->getRank();
       return rank;
     }
 
-    /**
-     * @brief returns the GPU device number of the current worker
-     * in the clique. Note that when this is used with Dask and
-     * the LocalCUDACluster, it should always return 0, as that
-     * will be the first device ordinal from the CUDA_VISIBLE_DEVICES
-     * environment variable.
-     */
-    int get_device() {
-      int device;
-      NCCL_CHECK(ncclCommCuDevice(comm, &device));
-      return device;
+    const ML::cumlHandle *get_handle() const {
+        return handle;
     }
+
 
     /**
      * @brief a simple validation that we can perform a collective
@@ -208,7 +206,7 @@ public:
 
       print(sendbuf, size, "sent", s);
 
-      NCCL_CHECK(ncclAllReduce((const void*)sendbuf, (void*)recvbuff, size, ncclFloat, ncclSum, comm, s));
+      communicator->allreduce((const void*)sendbuf, (void*)recvbuff, size, MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, s);
 
       CUDA_CHECK(cudaStreamSynchronize(s));
 
@@ -228,94 +226,53 @@ public:
 
     }
 
-    /**
-     * @brief simple utility function to print an array of floats
-     * that lives on the host.
-     */
-    template<typename T>
-    void print(T *arr, int size, std::string name, cudaStream_t s) {
+    bool perform_reduce_on_partition(float *sendbuf, int M, int N, int root_rank, float *recvbuff) {
 
-    float *res = (T*)malloc(size*sizeof(T));
-    CUDA_CHECK(cudaMemcpyAsync(res, arr, size*sizeof(T), cudaMemcpyDeviceToHost, s));
-    CUDA_CHECK(cudaStreamSynchronize(s));
+        int n_workers = nWorkers;
+        int rank = communicator->getRank();
 
-    std::cout << name << " = [";
-    for(int i = 0; i < size; i++) {
-        std::cout << res[i] << " ";
+        int num_bytes = M*N * sizeof(float);
 
-        if(i < size-1)
-            std::cout << ", ";
+        cudaStream_t s;
+        CUDA_CHECK(cudaStreamCreate(&s));
+
+        communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N,
+            MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, root_rank, s);
+
+        CUDA_CHECK(cudaStreamSynchronize(s));
+
+        bool verify = true;
+        if(rank == root_rank) {
+          verify_dev_arr(recvbuff, M*N, (float)n_workers, s);
+          if(verify)
+            printf("Reduce on partition completed successfully on %d. Received values verified to be %d\n", rank, n_workers);
+          else
+            printf("Reduce on partition did not contain the expected values [%d] on %d\n", n_workers, rank);
         }
 
-        std::cout << "]" << std::endl;
-        free(res);
-    }
-
-    /**
-     * @brief simple utility function to initialize all the items in a device
-     * array to the given value.
-     */
-    template<typename T>
-    void init_dev_arr(T *devArr, int size, T value, cudaStream_t s) {
-        T *h_init = (T*)malloc(size * sizeof(T));
-        for(int i = 0; i < size; i++)
-            h_init[i] = value;
-        CUDA_CHECK(cudaMemcpyAsync(devArr, h_init, size*sizeof(T), cudaMemcpyHostToDevice, s));
-        CUDA_CHECK(cudaStreamSynchronize(s));
-        free(h_init);
-    }
-
-    /**
-     * @brief simple utility function to verify all the items in a device
-     * array equal the given value.
-     */
-    template<typename T>
-    bool verify_dev_arr(T *devArr, int size, T value, cudaStream_t s) {
-
-        bool ret = true;
-
-        T *h_init = (T*)malloc(size * sizeof(T));
-        CUDA_CHECK(cudaMemcpyAsync(h_init, devArr, size*sizeof(T), cudaMemcpyDeviceToHost, s));
-        CUDA_CHECK(cudaStreamSynchronize(s));
-
-        for(int i = 0; i < size; i++)
-            if(h_init[i] != value)
-                ret = false;
-
-        free(h_init);
-
-        return ret;
+        return verify;
     }
 
 private:
 
     /** comm handle for all the connected processes so far */
-    ncclComm_t comm;
+
     ncclUniqueId uniqueId;
+
+
+    ML::cumlHandle *handle;
+    const MLCommon::cumlCommunicator *communicator;
 
     /** current dask worker ID received from python world */
     int workerId;
     /** number of workers */
     int nWorkers;
-
-    /**
-     * @brief Initializes the communicator for the nccl clique
-     */
-    void init() {
-      NCCL_CHECK(ncclCommInitRank(&comm, nWorkers, uniqueId, workerId));
-      printf("Init called on worker=%d\n", workerId);
-    }
-
-    /**
-     * @brief destroys the communicator for the nccl clique
-     */
-    void destroy() {
-      NCCL_CHECK(ncclCommDestroy(comm));
-    }
 };
 
 NcclClique *create_clique(int workerId, int nWorkers, const char *uid);
 
-const char *get_unique_id();
+void get_unique_id(char *uid);
 
-}; // end namespace HelloMPI
+
+
+}; // end namespace NCCLExample

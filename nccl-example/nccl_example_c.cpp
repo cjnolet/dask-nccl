@@ -1,12 +1,20 @@
 #include "nccl_example_c.h"
 
+#include <cuML.hpp>
+#include <cuML_comms.hpp>
+
+#include <common/cumlHandle.hpp>
+#include <common/cuml_comms_int.hpp>
+
 #include <stdio.h>
 #include <unistd.h>
 #include <string>
 #include <stdexcept>
 
-namespace NCCLExample {
+#include <iostream>
 
+
+namespace NCCLExample {
 
 /**
  * @brief Factory function to build a NCCL clique. This function is meant to be
@@ -19,11 +27,18 @@ namespace NCCLExample {
  */
 NcclClique *create_clique(int workerId, int nWorkers, const char *uniqueId) {
 
+    printf("Creating clique with worker=%d\n", workerId);
+
+    std::cout << "uniqueId in cpp: " << uniqueId << std::endl;
+
     ncclUniqueId id;
     memcpy(id.internal, uniqueId, NCCL_UNIQUE_ID_BYTES);
 
-    NcclClique *builder = new NcclClique(workerId, nWorkers, id);
-    return builder;
+    ML::cumlHandle *handle = new ML::cumlHandle(); // in this example, the NcclClique will take ownership of handle.
+    ncclComm_t comm;
+    initialize_comms(*handle, comm, nWorkers, workerId, id);
+
+    return new NcclClique(handle, workerId, nWorkers, id);
 }
 
 /**
@@ -35,17 +50,14 @@ NcclClique *create_clique(int workerId, int nWorkers, const char *uniqueId) {
  * @returns the generated NCCL unique ID for establishing a
  * new clique.
  */
-const char* get_unique_id() {
+void get_unique_id(char *uid) {
 
   ncclUniqueId id;
   ncclGetUniqueId(&id);
 
-  // NCCL's uniqueId type is just a struct
-  // with an `internal` field.
-  char* newchar = id.internal;
-  return newchar;
+  memcpy(uid, id.internal, NCCL_UNIQUE_ID_BYTES);
 }
-
+    
 
 
 } // end namespace HelloMPI
