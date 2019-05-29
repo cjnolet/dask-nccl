@@ -1,4 +1,4 @@
-# Dask + NCCL PoC
+# Dask + NCCL + cuML Comms PoC
 
 This project is a proof of concept for running ad-hoc NCCL cliques within an existing Dask cluster. 
 
