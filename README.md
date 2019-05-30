@@ -17,13 +17,9 @@ Dask is used to broadcast the NCCL `uniqueId` to the workers so that this proof 
 Steps to running this demonstration:
 
 1. You will need to have NCCL2 and the Cuda Toolkit installed and available on your library and include paths. You 
-can install nccl2 in conda with: 
+can install nccl2 in conda with: `conda install -c nvidia nccl`
 
-`conda install -c nvidia nccl`
-
-2. You can install cudatoolkit in your conda environment with:
-
-`conda install cudatoolkit==10.0.130`
+2. You can install cudatoolkit in your conda environment with: `conda install cudatoolkit==10.0.130`
 
 3. Check out the branch from the [cuML comms](https://github.com/rapidsai/cuml/pull/643) pull request and build the C++ source, as outlined in `BUILD.md` inside the cuml codebase. 
 
@@ -31,9 +27,7 @@ can install nccl2 in conda with:
 
 5. Set the `CUML_HOME` environment variable to the location of the cuML source code.
 
-6. To build the C++ and Cython portion of the demonstration, run the following in the project root directory:
-
-`python setup.py install`
+6. To build the C++ and Cython portion of the demonstration, run the following in the project root directory: `python setup.py install`
 
 
 Run the demonstration notebook by executing the `jupyter notebook` or `jupyter lab` commands in the project root directory and navigate to the `demo.ipynb` notebook.
