@@ -25,10 +25,7 @@ You can install cudatoolkit in your conda environment with:
 
 Check out the branch from the [cuML comms](https://github.com/rapidsai/cuml/pull/643) pull request and build the C++ source, as outlined in `BUILD.md` inside the cuml codebase. 
 
-The cuML NCCL Communicator will also need to be built, as per the instructions outlined in the comments of the cuML comms PR. You will need to have the resulting `libcumlcomms.so` on your `LD_LIBRARY_PATH`. If you are using conda, you can do this in the build directory after building the library with:
-
-`cp libcumlcomms.so $CONDA_PREFIX/lib`
-
+The cuML NCCL Communicator will also need to be built and installed, as per the instructions outlined in the comments of the cuML comms PR.
 
 Finally, set the `CUML_HOME` environment variable to the location of the cuML source code. 
 
