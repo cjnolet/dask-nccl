@@ -14,22 +14,24 @@ This demo uses `LocalCUDACluster` to establish a cluster of workers with OPG acc
 
 Dask is used to broadcast the NCCL `uniqueId` to the workers so that this proof of concept does not require a dependency on MPI. Next steps will also include demonstrating the use of UCX initialization using Dask workers. 
 
-To run this demonstration, you will need to have NCCL2 and the Cuda Toolkit installed and available on your library and include paths. You 
+Steps to running this demonstration:
+
+1. You will need to have NCCL2 and the Cuda Toolkit installed and available on your library and include paths. You 
 can install nccl2 in conda with: 
 
 `conda install -c nvidia nccl`
 
-You can install cudatoolkit in your conda environment with:
+2. You can install cudatoolkit in your conda environment with:
 
 `conda install cudatoolkit==10.0.130`
 
-Check out the branch from the [cuML comms](https://github.com/rapidsai/cuml/pull/643) pull request and build the C++ source, as outlined in `BUILD.md` inside the cuml codebase. 
+3. Check out the branch from the [cuML comms](https://github.com/rapidsai/cuml/pull/643) pull request and build the C++ source, as outlined in `BUILD.md` inside the cuml codebase. 
 
-The cuML NCCL Communicator will also need to be built and installed, as per the instructions outlined in the comments of the cuML comms PR.
+4. The cuML NCCL Communicator will need to be built and installed. You can find it in the pull request from step #3. The build instructions are outlined in the comments of the cuML comms PR.
 
-Finally, set the `CUML_HOME` environment variable to the location of the cuML source code. 
+5. Set the `CUML_HOME` environment variable to the location of the cuML source code.
 
-To build the C++ and Cython portion of the demonstration, run the following in the project root directory:
+6. To build the C++ and Cython portion of the demonstration, run the following in the project root directory:
 
 `python setup.py install`
 
