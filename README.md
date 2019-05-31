@@ -37,8 +37,8 @@ Run the demonstration notebook by executing the `jupyter notebook` or `jupyter l
 
 ## Multi-Node Demonstration
 
-Running the demo on multiple nodes will require that the steps above are done on all nodes such that they are using the same Python, Dask, cuDF, Dask cuDF, NCCL, and cuML versions.
+Running the demo on multiple nodes will require that the steps above are done on all hosts such that they are using the same Python, Dask, cuDF, Dask cuDF, NCCL, and cuML versions.
 
 A Dask cluster consists of a single scheduler and some number of workers. 
-- You can a Dask scheduler on any of the nodes with the `dask-scheduler` command.
+- You can a Dask scheduler on any of the hosts with the `dask-scheduler` command.
 - The `dask-cuda-worker <scheduler_address>` command (from the `dask-cuda` repository) can be run once on each host and will start a single worker for each GPU on that host. You can limit the GPUs on any host using the `LOCAL_CUDA_DEVICES` environment variable: `LOCAL_CUDA_DEVICES=0,1,2 dask-cuda-worker <scheduler_address>`
