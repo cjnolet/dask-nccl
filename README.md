@@ -14,6 +14,8 @@ This demo uses `LocalCUDACluster` to establish a cluster of workers with OPG acc
 
 Dask is used to broadcast the NCCL `uniqueId` to the workers so that this proof of concept does not require a dependency on MPI. Next steps will also include demonstrating the use of UCX initialization using Dask workers. 
 
+## Running the Demo
+
 Steps to running this demonstration:
 
 1. You will need to have NCCL2 and the Cuda Toolkit installed and available on your library and include paths. You 
@@ -29,6 +31,14 @@ can install nccl2 in conda with: `conda install -c nvidia nccl`
 
 6. To build the C++ and Cython portion of the demonstration, run the following in the project root directory: `python setup.py install`
 
+7. Install [dask-cuda](https://github.com/rapidsai/dask-cuda). It's easy to install this from source by running `python setup.py install` in the root directory of the repository. 
 
 Run the demonstration notebook by executing the `jupyter notebook` or `jupyter lab` commands in the project root directory and navigate to the `demo.ipynb` notebook.
 
+## Multi-Node Demonstration
+
+Running the demo on multiple nodes will require that the steps above are done on all nodes such that they are using the same Python, Dask, cuDF, Dask cuDF, NCCL, and cuML versions.
+
+A Dask cluster consists of a single scheduler and some number of workers. 
+- You can a Dask scheduler on any of the nodes with the `dask-scheduler` command.
+- The `dask-cuda-worker <scheduler_address>` command (from the `dask-cuda` repository) can be run once on each host and will start a single worker for each GPU on that host. You can limit the GPUs on any host using the `LOCAL_CUDA_DEVICES` environment variable: `LOCAL_CUDA_DEVICES=0,1,2 dask-cuda-worker <scheduler_address>`
