@@ -40,4 +40,8 @@ extensions = [Extension("nccl_example",
                         library_dirs=library_dirs,
                         extra_compile_args=["-std=c++11"])]
 
-setup(name="nccl_example", ext_modules = cythonize(extensions))
+setup(name="nccl_example",
+
+      ext_modules = cythonize(extensions)
+
+  )
