@@ -134,9 +134,10 @@ public:
      * @param numWorkers the number of workers in the clique
      * @param id the nccl unique id for the clique
      */
-    NcclClique(ML::cumlHandle *handle, int wid, int numWorkers, ncclUniqueId id):
-        workerId(wid), nWorkers(numWorkers), uniqueId(id), handle(handle) {
-            printf("Creating world builder with uniqueId=%s\n", id.internal);
+    NcclClique(ML::cumlHandle *handle, int wid, int numWorkers):
+        workerId(wid), nWorkers(numWorkers), handle(handle) {
+
+            printf("Creating world builder with rank=%d\n", wid);
 
         communicator = &handle->getImpl().getCommunicator();
     }
@@ -147,6 +148,8 @@ public:
             delete handle;
         }
     }
+
+
 
     /**
      * @brief returns the number of ranks in the current clique
@@ -269,9 +272,11 @@ private:
     int nWorkers;
 };
 
-NcclClique *create_clique(int workerId, int nWorkers, const char *uid);
+NcclClique *create_clique(ncclComm_t comm, int workerId, int nWorkers);
 
 void get_unique_id(char *uid);
+
+void ncclUniqueIdFromChar(ncclUniqueId *id, char *uniqueId);
 
 
 

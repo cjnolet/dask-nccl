@@ -16,6 +16,12 @@
 
 namespace NCCLExample {
 
+
+void ncclUniqueIdFromChar(ncclUniqueId *id, char *uniqueId) {
+    memcpy(id->internal, uniqueId, NCCL_UNIQUE_ID_BYTES);
+}
+
+
 /**
  * @brief Factory function to build a NCCL clique. This function is meant to be
  * called on all the ranks that will be joining the clique concurrently.
@@ -25,20 +31,20 @@ namespace NCCLExample {
  * @param nWorkers the number of workers that will be joining the clique
  * @param uniqueId the character array from the NCCL-generated uniqueId
  */
-NcclClique *create_clique(int workerId, int nWorkers, const char *uniqueId) {
+NcclClique *create_clique(ncclComm_t comm, int workerId, int nWorkers) {
 
-    printf("Creating clique with worker=%d\n", workerId);
+    printf("Creating clique with comm=%s, nWorkers=%d, worker=%d\n", comm, nWorkers, workerId);
 
-    std::cout << "uniqueId in cpp: " << uniqueId << std::endl;
+    int rank = -1;
 
-    ncclUniqueId id;
-    memcpy(id.internal, uniqueId, NCCL_UNIQUE_ID_BYTES);
+    NCCL_CHECK(ncclCommUserRank(comm, &rank));
+
+    printf("Verified rank = %d\n", rank);
 
     ML::cumlHandle *handle = new ML::cumlHandle(); // in this example, the NcclClique will take ownership of handle.
-    ncclComm_t comm;
-    initialize_comms(*handle, comm, nWorkers, workerId, id);
+    initialize_comms(*handle, comm, nWorkers, workerId);
 
-    return new NcclClique(handle, workerId, nWorkers, id);
+    return new NcclClique(handle, workerId, nWorkers);
 }
 
 /**
