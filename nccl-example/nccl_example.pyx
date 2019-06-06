@@ -75,13 +75,13 @@ def unique_id():
 
 cdef class nccl:
 
-    cdef size_t comm
+    cdef ncclComm_t *comm
 
     cdef int size
     cdef int rank
 
     def __cinit__(self):
-        self.comm = <size_t>malloc(sizeof(ncclComm_t))
+        self.comm = <ncclComm_t*>malloc(sizeof(ncclComm_t))
 
     def __dealloc__(self):
 
@@ -169,11 +169,11 @@ cdef class nccl:
         return ret
 
     def get_comm(self):
-        return self.comm
+        return <size_t>self.comm
 
 
 
-cdef class NCCL_Clique:
+cdef class Demo_Algo:
     
     cdef NcclClique *world
     cdef int workerId
