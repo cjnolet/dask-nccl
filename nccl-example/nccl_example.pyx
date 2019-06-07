@@ -185,50 +185,51 @@ cdef class nccl:
 
 
 
-cdef class Demo_Model:
+cdef class SimpleReduce:
     
     cdef const cumlCommunicator *cumlComm
     cdef int workerId
     cdef int nWorkers
 
-    def __cinit__(self, workerId, nWorkers):
+    cdef bool reduce_result
+
+
+    def __cinit__(self, workerId, nWorkers, cuml_comm = None):
         self.workerId = workerId
         self.nWorkers = nWorkers
-        self.cumlComm = NULL
 
+        cdef size_t temp_comm
+        if cuml_comm is not None:
+            temp_comm = <size_t>cuml_comm
+            comm_ = <ncclComm_t*>temp_comm
 
-    def build_cuml_comm(self, comm):
-
-        cdef size_t temp_comm = <size_t>comm
-
-        comm_ = <ncclComm_t*>temp_comm
-
-        if self.cumlComm is not NULL:
-            del self.cumlComm
-            self.cumlComm = NULL
-        else:
             self.cumlComm = build_comm(deref(comm_), self.workerId, self.nWorkers)
+        else:
+            self.cumlComm = NULL
+
 
     def get_clique_size(self):
+        """
+        Simple test that cumlCommunicator is working properly
+        """
         if self.cumlComm == NULL:
             print("Must initialize before getting size")
         else:
             return get_clique_size(self.cumlComm)
 
     def get_rank(self):
+        """
+        Simple test that cumlCommunicator is working properly
+        """
         if self.cumlComm == NULL:
             print("Must initialize before getting size")
         else:
             return get_rank(self.cumlComm)
 
-    def test_all_reduce(self):
-        if self.cumlComm == NULL:
-            print("Must initialize before getting size")
-        else:
-           return test_all_reduce(self.cumlComm, self.nWorkers);
-
-    def test_on_partition(self, df, root_rank, out_gpu_mat):
-
+    def fit(self, df, out_gpu_mat):
+        """
+        Mimics an MNMG fit() function on a model that uses collective comms
+        """
         cdef object X_m = df.as_gpu_matrix()
         cdef uintptr_t X_ctype = X_m.device_ctypes_pointer.value
         
@@ -237,13 +238,21 @@ cdef class Demo_Model:
         cdef int m = X_m.shape[0]
         cdef int n = X_m.shape[1]
 
-        return perform_reduce_on_partition(self.cumlComm,
+        self.reduce_result = perform_reduce_on_partition(self.cumlComm,
                                         self.nWorkers,
                                         <float*>X_ctype,
                                         <int>m,
                                         <int>n,
-                                        <int>root_rank,
+                                        <int>0,
                                         <float*>out_ctype)
+
+        return self
+
+    def transform(self, df, out_gpu_mat):
+        return self.reduce_result
+
+    def fit_transform(self, df, out_gpu_mat):
+        return self.fit(df, out_gpu_mat).transform(df, out_gpu_mat)
 
     def __del__(self):
         del self.cumlComm
