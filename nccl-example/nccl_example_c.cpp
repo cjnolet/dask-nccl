@@ -64,47 +64,9 @@ int get_rank(const MLCommon::cumlCommunicator *communicator) {
   return rank;
 }
 
-/**
- * @brief a simple validation that we can perform a collective
- * communication operation across the clique of workers.
- *
- * This specific example creates a float array of 10 elements,
- * all initialized to 1, and performs an allReducem to sum the
- * corresponding elements of each of the arrays together.
- */
-bool test_all_reduce(const MLCommon::cumlCommunicator *communicator, int nWorkers) {
 
-  int size = 10;
-  int num_bytes = size * sizeof(float);
 
-  float *sendbuf, *recvbuff;
-  cudaStream_t s;
-
-  CUDA_CHECK(cudaStreamCreate(&s));
-
-  CUDA_CHECK(cudaMalloc((void**)&sendbuf, num_bytes));
-  CUDA_CHECK(cudaMalloc((void**)&recvbuff, num_bytes));
-
-  init_dev_arr<float>(sendbuf, size, 1.0f, s);
-  init_dev_arr<float>(recvbuff, size, 0.0f, s);
-
-  print(sendbuf, size, "sent", s);
-
-  communicator->allreduce((const void*)sendbuf, (void*)recvbuff, size, MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, s);
-
-  CUDA_CHECK(cudaStreamSynchronize(s));
-
-  print(recvbuff, size, "received", s);
-
-  bool verify = verify_dev_arr(recvbuff, size, (float)nWorkers, s);
-  CUDA_CHECK(cudaFree(sendbuf));
-  CUDA_CHECK(cudaFree(recvbuff));
-
-  return verify;
-
-}
-
-bool perform_reduce_on_partition(const MLCommon::cumlCommunicator *communicator, int nWorkers, float *sendbuf, int M, int N, int root_rank, float *recvbuff) {
+bool fit(const MLCommon::cumlCommunicator *communicator, int nWorkers, float *sendbuf, int M, int N, int root_rank, float *recvbuff) {
 
     int n_workers = nWorkers;
     int rank = communicator->getRank();

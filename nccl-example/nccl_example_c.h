@@ -122,9 +122,7 @@ int get_clique_size(const MLCommon::cumlCommunicator *communicator);
 
 int get_rank(const MLCommon::cumlCommunicator *communicator);
 
-bool test_all_reduce(const MLCommon::cumlCommunicator *communicator, int nWorkers);
-
-bool perform_reduce_on_partition(const MLCommon::cumlCommunicator *communicator,
+bool fit(const MLCommon::cumlCommunicator *communicator,
     int nWorkers, float *sendbuf, int M, int N, int root_rank, float *recvbuff);
 
 void get_unique_id(char *uid);

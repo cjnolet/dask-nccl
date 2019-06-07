@@ -66,9 +66,7 @@ cdef extern from "nccl_example_c.h" namespace "NCCLExample":
 
     int get_rank(const cumlCommunicator * communicator)
 
-    bool test_all_reduce(const cumlCommunicator * communicator, int nWorkers)
-
-    bool perform_reduce_on_partition(const cumlCommunicator * communicator,
+    bool fit(const cumlCommunicator * communicator,
                                     int nWorkers,
                                     float * sendbuf,
                                     int M,
@@ -250,13 +248,13 @@ cdef class SimpleReduce:
 
         self.model_params = out_df
 
-        self.reduce_result = perform_reduce_on_partition(self.cumlComm,
-                                        self.nWorkers,
-                                        <float*>X_ctype,
-                                        <int>m,
-                                        <int>n,
-                                        <int>0,
-                                        <float*>out_ctype)
+        self.reduce_result = fit(self.cumlComm,
+                                self.nWorkers,
+                                <float*>X_ctype,
+                                <int>m,
+                                <int>n,
+                                <int>0,
+                                <float*>out_ctype)
 
         if get_rank(self.cumlComm) == 0:
             for i in range(0, out_gpu_mat.shape[1]):
