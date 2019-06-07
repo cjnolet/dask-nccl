@@ -10,6 +10,10 @@ import re
 import os
 from cython.operator cimport dereference as deref
 
+import numpy as np
+import numba.cuda
+import cudf
+
 from libc.stdint cimport uintptr_t
 
 import cudf
@@ -192,6 +196,7 @@ cdef class SimpleReduce:
     cdef int nWorkers
 
     cdef bool reduce_result
+    cdef object model_params
 
 
     def __cinit__(self, workerId, nWorkers, cuml_comm = None):
@@ -226,17 +231,27 @@ cdef class SimpleReduce:
         else:
             return get_rank(self.cumlComm)
 
-    def fit(self, df, out_gpu_mat):
+    def fit(self, df):
         """
         Mimics an MNMG fit() function on a model that uses collective comms
         """
         cdef object X_m = df.as_gpu_matrix()
         cdef uintptr_t X_ctype = X_m.device_ctypes_pointer.value
-        
+
+        if get_rank(self.cumlComm) == 0:
+            out_gpu_mat = numba.cuda.to_device(np.zeros((df.shape[0], df.shape[1]),
+                                                        dtype=np.float32, order="F"))
+            out_df = cudf.DataFrame(index=cudf.dataframe.RangeIndex(0, df.shape[0]))
+        else:
+            out_gpu_mat = numba.cuda.device_array((1, 1), dtype=np.float32)
+            out_df = None
+
         cdef uintptr_t out_ctype = out_gpu_mat.device_ctypes_pointer.value
         
         cdef int m = X_m.shape[0]
         cdef int n = X_m.shape[1]
+
+        self.model_params = out_df
 
         self.reduce_result = perform_reduce_on_partition(self.cumlComm,
                                         self.nWorkers,
@@ -246,13 +261,21 @@ cdef class SimpleReduce:
                                         <int>0,
                                         <float*>out_ctype)
 
+        if get_rank(self.cumlComm) == 0:
+            for i in range(0, out_gpu_mat.shape[1]):
+                out_df[str(i)] = out_gpu_mat[:, i]
+
+
         return self
 
-    def transform(self, df, out_gpu_mat):
-        return self.reduce_result
+    def transform(self, df):
+        return self.model_params
 
-    def fit_transform(self, df, out_gpu_mat):
-        return self.fit(df, out_gpu_mat).transform(df, out_gpu_mat)
+    def fit_transform(self, df):
+        return self.fit(df).transform(df)
+
+    def verify(self):
+        return self.reduce_result
 
     def __del__(self):
         del self.cumlComm
