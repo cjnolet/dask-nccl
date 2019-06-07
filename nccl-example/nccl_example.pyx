@@ -187,8 +187,6 @@ cdef class nccl:
     def get_comm(self):
         return <size_t>self.comm
 
-
-
 cdef class SimpleReduce:
     
     cdef const cumlCommunicator *cumlComm
@@ -197,7 +195,6 @@ cdef class SimpleReduce:
 
     cdef bool reduce_result
     cdef object model_params
-
 
     def __cinit__(self, workerId, nWorkers, cuml_comm = None):
         self.workerId = workerId
