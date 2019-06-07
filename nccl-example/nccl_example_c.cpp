@@ -31,7 +31,7 @@ void ncclUniqueIdFromChar(ncclUniqueId *id, char *uniqueId) {
  * @param nWorkers the number of workers that will be joining the clique
  * @param uniqueId the character array from the NCCL-generated uniqueId
  */
-NcclClique *create_clique(ncclComm_t comm, int workerId, int nWorkers) {
+const MLCommon::cumlCommunicator *build_comm(ncclComm_t comm, int workerId, int nWorkers) {
 
     printf("Creating clique with comm=%s, nWorkers=%d, worker=%d\n", comm, nWorkers, workerId);
 
@@ -44,7 +44,91 @@ NcclClique *create_clique(ncclComm_t comm, int workerId, int nWorkers) {
     ML::cumlHandle *handle = new ML::cumlHandle(); // in this example, the NcclClique will take ownership of handle.
     initialize_comms(*handle, comm, nWorkers, workerId);
 
-    return new NcclClique(handle, workerId, nWorkers);
+    return &handle->getImpl().getCommunicator();
+}
+
+/**
+ * @brief returns the number of ranks in the current clique
+ */
+int get_clique_size(const MLCommon::cumlCommunicator *communicator) {
+  int count  = communicator->getSize();
+  return count;
+}
+
+
+/**
+ * @brief returns the rank of the current worker in the clique
+ */
+int get_rank(const MLCommon::cumlCommunicator *communicator) {
+  int rank = communicator->getRank();
+  return rank;
+}
+
+/**
+ * @brief a simple validation that we can perform a collective
+ * communication operation across the clique of workers.
+ *
+ * This specific example creates a float array of 10 elements,
+ * all initialized to 1, and performs an allReducem to sum the
+ * corresponding elements of each of the arrays together.
+ */
+bool test_all_reduce(const MLCommon::cumlCommunicator *communicator, int nWorkers) {
+
+  int size = 10;
+  int num_bytes = size * sizeof(float);
+
+  float *sendbuf, *recvbuff;
+  cudaStream_t s;
+
+  CUDA_CHECK(cudaStreamCreate(&s));
+
+  CUDA_CHECK(cudaMalloc((void**)&sendbuf, num_bytes));
+  CUDA_CHECK(cudaMalloc((void**)&recvbuff, num_bytes));
+
+  init_dev_arr<float>(sendbuf, size, 1.0f, s);
+  init_dev_arr<float>(recvbuff, size, 0.0f, s);
+
+  print(sendbuf, size, "sent", s);
+
+  communicator->allreduce((const void*)sendbuf, (void*)recvbuff, size, MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, s);
+
+  CUDA_CHECK(cudaStreamSynchronize(s));
+
+  print(recvbuff, size, "received", s);
+
+  bool verify = verify_dev_arr(recvbuff, size, (float)nWorkers, s);
+  CUDA_CHECK(cudaFree(sendbuf));
+  CUDA_CHECK(cudaFree(recvbuff));
+
+  return verify;
+
+}
+
+bool perform_reduce_on_partition(const MLCommon::cumlCommunicator *communicator, int nWorkers, float *sendbuf, int M, int N, int root_rank, float *recvbuff) {
+
+    int n_workers = nWorkers;
+    int rank = communicator->getRank();
+
+    int num_bytes = M*N * sizeof(float);
+
+    cudaStream_t s;
+    CUDA_CHECK(cudaStreamCreate(&s));
+
+    communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N,
+        MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, root_rank, s);
+
+    CUDA_CHECK(cudaStreamSynchronize(s));
+
+    bool verify = true;
+    if(rank == root_rank) {
+      verify_dev_arr(recvbuff, M*N, (float)n_workers, s);
+      if(verify)
+        printf("Reduce on partition completed successfully on %d. Received values verified to be %d\n", rank, n_workers);
+      else
+        printf("Reduce on partition did not contain the expected values [%d] on %d\n", n_workers, rank);
+    }
+
+    return verify;
 }
 
 /**

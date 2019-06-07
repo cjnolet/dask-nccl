@@ -16,8 +16,7 @@ import cudf
 
 cdef extern from "nccl.h":
 
-    cdef struct ncclComm:
-        pass
+    cdef struct ncclComm
 
     ctypedef struct ncclUniqueId:
         char *internal[128]
@@ -52,18 +51,31 @@ cdef extern from "nccl.h":
 
 
 
+cdef extern from "common/cuML_comms_impl.cpp" namespace "MLCommon":
+    cdef cppclass cumlCommunicator
+
 cdef extern from "nccl_example_c.h" namespace "NCCLExample":
-    
-    cdef cppclass NcclClique:
-        int get_clique_size()
-        int get_rank()
-        bool test_all_reduce()
-        bool perform_reduce_on_partition(float * inp, int M, int N, int root_rank, float *output)
 
-    NcclClique *create_clique(ncclComm_t comm, int workerId, int nWorkers)
-    void get_unique_id(char *uid)
+    const cumlCommunicator * build_comm(ncclComm_t comm, int workerId, int nWorkers)
 
-    void ncclUniqueIdFromChar(ncclUniqueId *id, char *uniqueId)
+    int get_clique_size(const cumlCommunicator * communicator)
+
+    int get_rank(const cumlCommunicator * communicator)
+
+    bool test_all_reduce(const cumlCommunicator * communicator, int nWorkers)
+
+    bool perform_reduce_on_partition(const cumlCommunicator * communicator,
+                                    int nWorkers,
+                                    float * sendbuf,
+                                    int M,
+                                    int N,
+                                    int root_rank,
+                                    float * recvbuff)
+
+    void get_unique_id(char * uid)
+
+    void ncclUniqueIdFromChar(ncclUniqueId * id, char * uniqueId);
+
 
 def unique_id():
     cdef char *uid = <char *> malloc(128 * sizeof(char))
@@ -173,47 +185,47 @@ cdef class nccl:
 
 
 
-cdef class Demo_Algo:
+cdef class Demo_Model:
     
-    cdef NcclClique *world
+    cdef const cumlCommunicator *cumlComm
     cdef int workerId
     cdef int nWorkers
 
     def __cinit__(self, workerId, nWorkers):
         self.workerId = workerId
         self.nWorkers = nWorkers
-        self.world = NULL
+        self.cumlComm = NULL
 
 
-    def create_clique(self, comm):
+    def build_cuml_comm(self, comm):
 
         cdef size_t temp_comm = <size_t>comm
 
         comm_ = <ncclComm_t*>temp_comm
 
-        if self.world is not NULL:
-            del self.world
-            self.world = NULL
+        if self.cumlComm is not NULL:
+            del self.cumlComm
+            self.cumlComm = NULL
         else:
-            self.world = create_clique(deref(comm_), self.workerId, self.nWorkers)
+            self.cumlComm = build_comm(deref(comm_), self.workerId, self.nWorkers)
 
     def get_clique_size(self):
-        if self.world == NULL:
+        if self.cumlComm == NULL:
             print("Must initialize before getting size")
         else:
-            return self.world.get_clique_size()
+            return get_clique_size(self.cumlComm)
 
     def get_rank(self):
-        if self.world == NULL:
+        if self.cumlComm == NULL:
             print("Must initialize before getting size")
         else:
-            return self.world.get_rank()
+            return get_rank(self.cumlComm)
 
     def test_all_reduce(self):
-        if self.world == NULL:
+        if self.cumlComm == NULL:
             print("Must initialize before getting size")
         else:
-           return self.world.test_all_reduce();
+           return test_all_reduce(self.cumlComm, self.nWorkers);
 
     def test_on_partition(self, df, root_rank, out_gpu_mat):
 
@@ -225,14 +237,16 @@ cdef class Demo_Algo:
         cdef int m = X_m.shape[0]
         cdef int n = X_m.shape[1]
 
-        return self.world.perform_reduce_on_partition(<float*>X_ctype,
+        return perform_reduce_on_partition(self.cumlComm,
+                                        self.nWorkers,
+                                        <float*>X_ctype,
                                         <int>m,
                                         <int>n,
                                         <int>root_rank,
                                         <float*>out_ctype)
 
     def __del__(self):
-        del self.world
+        del self.cumlComm
 
 
 

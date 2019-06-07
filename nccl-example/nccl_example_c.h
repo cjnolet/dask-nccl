@@ -113,171 +113,22 @@ private:
 
 #pragma once
 
+
 namespace NCCLExample {
 
+const MLCommon::cumlCommunicator *build_comm(ncclComm_t comm, int workerId, int nWorkers);
 
-/**
- * @brief This class encapsulates the logic for establishing and managing the
- * lifecycle of a NCCL communicator for a single clique. The reason for this
- * separate class is so that we can wrap as little as possible through Cython,
- * but still be able to act directly on the NCCL communicator.
- *
- * It "should" be possible to have multiple cliques running on the same worker
- * process, though this still needs to be verified through experimentation.
- */
-class NcclClique {
-    
-public:
+int get_clique_size(const MLCommon::cumlCommunicator *communicator);
 
-    /**
-     * @param wid the worker id
-     * @param numWorkers the number of workers in the clique
-     * @param id the nccl unique id for the clique
-     */
-    NcclClique(ML::cumlHandle *handle, int wid, int numWorkers):
-        workerId(wid), nWorkers(numWorkers), handle(handle) {
+int get_rank(const MLCommon::cumlCommunicator *communicator);
 
-            printf("Creating world builder with rank=%d\n", wid);
+bool test_all_reduce(const MLCommon::cumlCommunicator *communicator, int nWorkers);
 
-        communicator = &handle->getImpl().getCommunicator();
-    }
-
-    ~NcclClique() {
-        if(workerId == 0) {
-            printf("worker=%d: server closing port\n", workerId);
-            delete handle;
-        }
-    }
-
-
-
-    /**
-     * @brief returns the number of ranks in the current clique
-     */
-    int get_clique_size() const {
-
-      int count  = communicator->getSize();
-
-      if(count == nWorkers)
-          printf("Clique size on worker=%d successfully verified to be %d\n", workerId, nWorkers);
-      else
-          printf("Clique construction was not successful. Size on worker=%d verified to be %d, but should have been %d\n", workerId, count, nWorkers);
-
-
-      return count;
-    }
-
-
-    /**
-     * @brief returns the rank of the current worker in the clique
-     */
-    int get_rank() const {
-      int rank = communicator->getRank();
-      return rank;
-    }
-
-    const ML::cumlHandle *get_handle() const {
-        return handle;
-    }
-
-
-    /**
-     * @brief a simple validation that we can perform a collective
-     * communication operation across the clique of workers.
-     *
-     * This specific example creates a float array of 10 elements,
-     * all initialized to 1, and performs an allReducem to sum the
-     * corresponding elements of each of the arrays together.
-     */
-    bool test_all_reduce() {
-
-      printf("Calling allReduce on %d\n", workerId);
-
-      int size = 10;
-      int num_bytes = size * sizeof(float);
-
-      float *sendbuf, *recvbuff;
-      cudaStream_t s;
-
-      CUDA_CHECK(cudaStreamCreate(&s));
-
-      CUDA_CHECK(cudaMalloc((void**)&sendbuf, num_bytes));
-      CUDA_CHECK(cudaMalloc((void**)&recvbuff, num_bytes));
-
-      init_dev_arr<float>(sendbuf, size, 1.0f, s);
-      init_dev_arr<float>(recvbuff, size, 0.0f, s);
-
-      print(sendbuf, size, "sent", s);
-
-      communicator->allreduce((const void*)sendbuf, (void*)recvbuff, size, MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, s);
-
-      CUDA_CHECK(cudaStreamSynchronize(s));
-
-      print(recvbuff, size, "received", s);
-
-      bool verify = verify_dev_arr(recvbuff, size, (float)nWorkers, s);
-      if(verify)
-          printf("allReduce completed successfully on %d. Received values verified to be %d\n", workerId, nWorkers);
-      else
-          printf("allReduce did not contain the expected values [%d] on %d\n", nWorkers, workerId);
-
-
-      CUDA_CHECK(cudaFree(sendbuf));
-      CUDA_CHECK(cudaFree(recvbuff));
-
-      return verify;
-
-    }
-
-    bool perform_reduce_on_partition(float *sendbuf, int M, int N, int root_rank, float *recvbuff) {
-
-        int n_workers = nWorkers;
-        int rank = communicator->getRank();
-
-        int num_bytes = M*N * sizeof(float);
-
-        cudaStream_t s;
-        CUDA_CHECK(cudaStreamCreate(&s));
-
-        communicator->reduce((const void*)sendbuf, (void*)recvbuff, M*N,
-            MLCommon::cumlCommunicator::FLOAT, MLCommon::cumlCommunicator::SUM, root_rank, s);
-
-        CUDA_CHECK(cudaStreamSynchronize(s));
-
-        bool verify = true;
-        if(rank == root_rank) {
-          verify_dev_arr(recvbuff, M*N, (float)n_workers, s);
-          if(verify)
-            printf("Reduce on partition completed successfully on %d. Received values verified to be %d\n", rank, n_workers);
-          else
-            printf("Reduce on partition did not contain the expected values [%d] on %d\n", n_workers, rank);
-        }
-
-        return verify;
-    }
-
-private:
-
-    /** comm handle for all the connected processes so far */
-
-    ncclUniqueId uniqueId;
-
-
-    ML::cumlHandle *handle;
-    const MLCommon::cumlCommunicator *communicator;
-
-    /** current dask worker ID received from python world */
-    int workerId;
-    /** number of workers */
-    int nWorkers;
-};
-
-NcclClique *create_clique(ncclComm_t comm, int workerId, int nWorkers);
+bool perform_reduce_on_partition(const MLCommon::cumlCommunicator *communicator,
+    int nWorkers, float *sendbuf, int M, int N, int root_rank, float *recvbuff);
 
 void get_unique_id(char *uid);
 
 void ncclUniqueIdFromChar(ncclUniqueId *id, char *uniqueId);
-
-
 
 }; // end namespace NCCLExample
