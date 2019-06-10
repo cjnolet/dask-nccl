@@ -58,7 +58,7 @@ cdef extern from "nccl.h":
 cdef extern from "common/cuML_comms_impl.cpp" namespace "MLCommon":
     cdef cppclass cumlCommunicator
 
-cdef extern from "nccl_example_c.h" namespace "NCCLExample":
+cdef extern from "simple_reduce.h" namespace "NCCLExample":
 
     const cumlCommunicator * build_comm(ncclComm_t comm, int workerId, int nWorkers)
 

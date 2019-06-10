@@ -30,7 +30,7 @@ library_dirs = [cuda_lib_dir, cuml_lib, comms_lib]
 if os.environ.get("CONDA_PREFIX", None):
     include_dirs.append(os.environ.get("CONDA_PREFIX") + "/include")
 
-srcs = ["nccl-example/nccl_example.pyx", "nccl-example/nccl_example_c.cpp"]
+srcs = ["nccl-example/simple_reduce.pyx", "nccl-example/simple_reduce.cpp"]
 
 extensions = [Extension("nccl_example",
                         sources=srcs,
