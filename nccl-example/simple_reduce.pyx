@@ -2,6 +2,8 @@
 # distutils: language = c++
 # cython: embedsignature = True
 # cython: language_level = 3
+from cuml.common.handle import cumlHandle
+
 
 import dask.distributed
 from libcpp cimport bool
