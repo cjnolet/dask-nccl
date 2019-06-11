@@ -2,7 +2,7 @@
 # distutils: language = c++
 # cython: embedsignature = True
 # cython: language_level = 3
-from cuml.common.handle import cumlHandle
+from cuml.common.handle import Handle
 
 
 import dask.distributed
@@ -62,8 +62,17 @@ cdef extern from "ucp/api/ucp.h":
     ctypedef struct ucp_worker_h:
         pass
 
+
 cdef extern from "common/cuML_comms_impl.cpp" namespace "MLCommon":
     cdef cppclass cumlCommunicator
+
+cdef extern from "cuML.hpp" namespace "ML" nogil:
+    cdef cppclass cumlHandle:
+        cumlHandle() except +
+
+cdef extern from "cuML_comms.hpp":
+    void inject_comms(cumlHandle& handle, ncclComm_t comm, ucp_worker_h *ucp_worker, ucp_ep_h **eps, int size, int rank);
+
 
 cdef extern from "simple_reduce_api.h" namespace "NCCLExample":
 
@@ -281,6 +290,7 @@ cdef class SimpleReduce:
 
     def __del__(self):
         del self.cumlComm
+
 
 
 
