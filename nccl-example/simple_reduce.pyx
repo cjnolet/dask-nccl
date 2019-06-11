@@ -71,7 +71,7 @@ cdef extern from "cuML.hpp" namespace "ML" nogil:
         cumlHandle() except +
 
 cdef extern from "cuML_comms.hpp":
-    void inject_comms(cumlHandle& handle, ncclComm_t comm, ucp_worker_h *ucp_worker, ucp_ep_h **eps, int size, int rank);
+    void inject_comms(cumlHandle handle, ncclComm_t comm, ucp_worker_h *ucp_worker, ucp_ep_h **eps, int size, int rank);
 
 
 cdef extern from "simple_reduce_api.h" namespace "NCCLExample":
@@ -101,6 +101,17 @@ def unique_id():
     c_str = uid[:127]
     free(uid)
     return c_str
+
+def inject_comms_on_handle(handle, nccl_inst, size, rank):
+    cdef size_t handle_size_t = <size_t>handle.getHandle()
+    handle_ = <cumlHandle*>handle_size_t
+
+    cdef size_t nccl_comm_size_t = <size_t>nccl_inst.get_comm()
+    nccl_comm_ = <ncclComm_t*>nccl_comm_size_t
+
+    inject_comms(deref(handle_), deref(nccl_comm_), NULL, NULL, size, rank)
+    
+    
 
 
 cdef class nccl:
