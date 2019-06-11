@@ -31,7 +31,7 @@ void ncclUniqueIdFromChar(ncclUniqueId *id, char *uniqueId) {
  * @param nWorkers the number of workers that will be joining the clique
  * @param uniqueId the character array from the NCCL-generated uniqueId
  */
-const MLCommon::cumlCommunicator *build_comm(ncclComm_t comm, int workerId, int nWorkers) {
+const MLCommon::cumlCommunicator *build_comm(ncclComm_t comm, ucp_worker_h *worker, ucp_ep_h **eps, int workerId, int nWorkers) {
 
     printf("Creating clique with comm=%s, nWorkers=%d, worker=%d\n", comm, nWorkers, workerId);
 
@@ -42,7 +42,7 @@ const MLCommon::cumlCommunicator *build_comm(ncclComm_t comm, int workerId, int 
     printf("Verified rank = %d\n", rank);
 
     ML::cumlHandle *handle = new ML::cumlHandle(); // in this example, the NcclClique will take ownership of handle.
-    inject_comms(*handle, comm, nWorkers, workerId);
+    inject_comms(*handle, comm, nullptr, nullptr, nWorkers, workerId);
 
     return &handle->getImpl().getCommunicator();
 }

@@ -8,6 +8,7 @@
 #include <common/cumlHandle.hpp>
 #include <common/cuml_comms_int.hpp>
 
+#include <ucp/api/ucp.h>
 #include <nccl.h>
 
 #include <execinfo.h>
@@ -116,7 +117,7 @@ private:
 
 namespace NCCLExample {
 
-const MLCommon::cumlCommunicator *build_comm(ncclComm_t comm, int workerId, int nWorkers);
+const MLCommon::cumlCommunicator *build_comm(ncclComm_t comm, ucp_worker_h *worker, ucp_ep_h **eps, int workerId, int nWorkers);
 
 int get_clique_size(const MLCommon::cumlCommunicator *communicator);
 

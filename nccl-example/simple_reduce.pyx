@@ -53,14 +53,19 @@ cdef extern from "nccl.h":
 
     ncclResult_t ncclCommDestroy(ncclComm_t comm)
 
+cdef extern from "ucp/api/ucp.h":
+    ctypedef struct ucp_ep_h:
+        pass
 
+    ctypedef struct ucp_worker_h:
+        pass
 
 cdef extern from "common/cuML_comms_impl.cpp" namespace "MLCommon":
     cdef cppclass cumlCommunicator
 
 cdef extern from "simple_reduce_api.h" namespace "NCCLExample":
 
-    const cumlCommunicator * build_comm(ncclComm_t comm, int workerId, int nWorkers)
+    const cumlCommunicator * build_comm(ncclComm_t comm, ucp_worker_h *ucp_worker, ucp_ep_h **ucp_eps, int workerId, int nWorkers)
 
     int get_clique_size(const cumlCommunicator * communicator)
 
@@ -203,7 +208,7 @@ cdef class SimpleReduce:
             temp_comm = <size_t>cuml_comm
             comm_ = <ncclComm_t*>temp_comm
 
-            self.cumlComm = build_comm(deref(comm_), self.workerId, self.nWorkers)
+            self.cumlComm = build_comm(deref(comm_), NULL, NULL, self.workerId, self.nWorkers)
         else:
             self.cumlComm = NULL
 
