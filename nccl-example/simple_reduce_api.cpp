@@ -42,7 +42,7 @@ const MLCommon::cumlCommunicator *build_comm(ncclComm_t comm, ucp_worker_h *work
     printf("Verified rank = %d\n", rank);
 
     ML::cumlHandle *handle = new ML::cumlHandle(); // in this example, the NcclClique will take ownership of handle.
-    inject_comms(*handle, comm, nullptr, nullptr, nWorkers, workerId);
+    inject_comms(*handle, comm, worker, eps, nWorkers, workerId);
 
     return &handle->getImpl().getCommunicator();
 }
