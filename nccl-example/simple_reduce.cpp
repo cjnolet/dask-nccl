@@ -879,7 +879,7 @@ static const char *__pyx_f[] = {
 struct __pyx_obj_12nccl_example_nccl;
 struct __pyx_obj_12nccl_example_SimpleReduce;
 
-/* "nccl-example/simple_reduce.pyx":117
+/* "nccl-example/simple_reduce.pyx":131
  * 
  * 
  * cdef class nccl:             # <<<<<<<<<<<<<<
@@ -894,7 +894,7 @@ struct __pyx_obj_12nccl_example_nccl {
 };
 
 
-/* "nccl-example/simple_reduce.pyx":215
+/* "nccl-example/simple_reduce.pyx":231
  *         return <size_t>self.comm
  * 
  * cdef class SimpleReduce:             # <<<<<<<<<<<<<<
@@ -996,6 +996,28 @@ static void __Pyx_RaiseDoubleKeywordsError(const char* func_name, PyObject* kw_n
 static int __Pyx_ParseOptionalKeywords(PyObject *kwds, PyObject **argnames[],\
     PyObject *kwds2, PyObject *values[], Py_ssize_t num_pos_args,\
     const char* function_name);
+
+/* GetItemInt.proto */
+#define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_GetItemInt_Fast(o, (Py_ssize_t)i, is_list, wraparound, boundscheck) :\
+    (is_list ? (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL) :\
+               __Pyx_GetItemInt_Generic(o, to_py_func(i))))
+#define __Pyx_GetItemInt_List(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_GetItemInt_List_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
+    (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL))
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
+                                                              int wraparound, int boundscheck);
+#define __Pyx_GetItemInt_Tuple(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
+    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
+    __Pyx_GetItemInt_Tuple_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
+    (PyErr_SetString(PyExc_IndexError, "tuple index out of range"), (PyObject*)NULL))
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
+                                                              int wraparound, int boundscheck);
+static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
+                                                     int is_list, int wraparound, int boundscheck);
 
 /* PyFunctionFastCall.proto */
 #if CYTHON_FAST_PYCALL
@@ -1138,28 +1160,6 @@ static CYTHON_INLINE void __Pyx_ErrFetchInState(PyThreadState *tstate, PyObject 
 /* RaiseException.proto */
 static void __Pyx_Raise(PyObject *type, PyObject *value, PyObject *tb, PyObject *cause);
 
-/* GetItemInt.proto */
-#define __Pyx_GetItemInt(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_GetItemInt_Fast(o, (Py_ssize_t)i, is_list, wraparound, boundscheck) :\
-    (is_list ? (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL) :\
-               __Pyx_GetItemInt_Generic(o, to_py_func(i))))
-#define __Pyx_GetItemInt_List(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_GetItemInt_List_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
-    (PyErr_SetString(PyExc_IndexError, "list index out of range"), (PyObject*)NULL))
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
-                                                              int wraparound, int boundscheck);
-#define __Pyx_GetItemInt_Tuple(o, i, type, is_signed, to_py_func, is_list, wraparound, boundscheck)\
-    (__Pyx_fits_Py_ssize_t(i, type, is_signed) ?\
-    __Pyx_GetItemInt_Tuple_Fast(o, (Py_ssize_t)i, wraparound, boundscheck) :\
-    (PyErr_SetString(PyExc_IndexError, "tuple index out of range"), (PyObject*)NULL))
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
-                                                              int wraparound, int boundscheck);
-static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j);
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i,
-                                                     int is_list, int wraparound, int boundscheck);
-
 /* PyObjectCall2Args.proto */
 static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2);
 
@@ -1283,13 +1283,15 @@ int __pyx_module_is_main_nccl_example = 0;
 
 /* Implementation of 'nccl_example' */
 static PyObject *__pyx_builtin_staticmethod;
+static PyObject *__pyx_builtin_range;
 static PyObject *__pyx_builtin_print;
 static PyObject *__pyx_builtin_TypeError;
-static PyObject *__pyx_builtin_range;
 static const char __pyx_k_F[] = "F";
+static const char __pyx_k_i[] = "i";
 static const char __pyx_k_np[] = "np";
 static const char __pyx_k_os[] = "os";
 static const char __pyx_k_re[] = "re";
+static const char __pyx_k_eps[] = "eps";
 static const char __pyx_k_fit[] = "fit";
 static const char __pyx_k_uid[] = "uid";
 static const char __pyx_k_cuda[] = "cuda";
@@ -1303,6 +1305,7 @@ static const char __pyx_k_size[] = "size";
 static const char __pyx_k_test[] = "__test__";
 static const char __pyx_k_c_str[] = "c_str";
 static const char __pyx_k_dtype[] = "dtype";
+static const char __pyx_k_ep_st[] = "ep_st";
 static const char __pyx_k_index[] = "index";
 static const char __pyx_k_numba[] = "numba";
 static const char __pyx_k_numpy[] = "numpy";
@@ -1314,11 +1317,13 @@ static const char __pyx_k_value[] = "value";
 static const char __pyx_k_zeros[] = "zeros";
 static const char __pyx_k_Handle[] = "Handle";
 static const char __pyx_k_commId[] = "commId";
+static const char __pyx_k_get_ep[] = "get_ep";
 static const char __pyx_k_handle[] = "handle";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_nranks[] = "nranks";
 static const char __pyx_k_reduce[] = "__reduce__";
 static const char __pyx_k_float32[] = "float32";
+static const char __pyx_k_ucp_eps[] = "ucp_eps";
 static const char __pyx_k_get_comm[] = "get_comm";
 static const char __pyx_k_getstate[] = "__getstate__";
 static const char __pyx_k_handle_2[] = "handle_";
@@ -1338,6 +1343,7 @@ static const char __pyx_k_transform[] = "transform";
 static const char __pyx_k_unique_id[] = "unique_id";
 static const char __pyx_k_RangeIndex[] = "RangeIndex";
 static const char __pyx_k_numba_cuda[] = "numba.cuda";
+static const char __pyx_k_ucp_worker[] = "ucp_worker";
 static const char __pyx_k_NCCL_ERROR_s[] = "NCCL_ERROR: %s";
 static const char __pyx_k_SimpleReduce[] = "SimpleReduce";
 static const char __pyx_k_device_array[] = "device_array";
@@ -1347,6 +1353,7 @@ static const char __pyx_k_as_gpu_matrix[] = "as_gpu_matrix";
 static const char __pyx_k_get_unique_id[] = "get_unique_id";
 static const char __pyx_k_handle_size_t[] = "handle_size_t";
 static const char __pyx_k_reduce_cython[] = "__reduce_cython__";
+static const char __pyx_k_ucp_worker_st[] = "ucp_worker_st";
 static const char __pyx_k_setstate_cython[] = "__setstate_cython__";
 static const char __pyx_k_dask_distributed[] = "dask.distributed";
 static const char __pyx_k_nccl_comm_size_t[] = "nccl_comm_size_t";
@@ -1379,15 +1386,19 @@ static PyObject *__pyx_n_s_dataframe;
 static PyObject *__pyx_n_s_device_array;
 static PyObject *__pyx_n_s_device_ctypes_pointer;
 static PyObject *__pyx_n_s_dtype;
+static PyObject *__pyx_n_s_ep_st;
+static PyObject *__pyx_n_s_eps;
 static PyObject *__pyx_n_s_fit;
 static PyObject *__pyx_n_s_float32;
 static PyObject *__pyx_n_s_getHandle;
 static PyObject *__pyx_n_s_get_comm;
+static PyObject *__pyx_n_s_get_ep;
 static PyObject *__pyx_n_s_get_unique_id;
 static PyObject *__pyx_n_s_getstate;
 static PyObject *__pyx_n_s_handle;
 static PyObject *__pyx_n_s_handle_2;
 static PyObject *__pyx_n_s_handle_size_t;
+static PyObject *__pyx_n_s_i;
 static PyObject *__pyx_n_s_import;
 static PyObject *__pyx_n_s_index;
 static PyObject *__pyx_n_s_inject_comms_on_handle;
@@ -1423,23 +1434,27 @@ static PyObject *__pyx_n_s_staticmethod;
 static PyObject *__pyx_n_s_test;
 static PyObject *__pyx_n_s_to_device;
 static PyObject *__pyx_n_s_transform;
+static PyObject *__pyx_n_s_ucp_eps;
+static PyObject *__pyx_n_s_ucp_worker;
+static PyObject *__pyx_n_s_ucp_worker_st;
 static PyObject *__pyx_n_s_uid;
 static PyObject *__pyx_n_s_unique_id;
 static PyObject *__pyx_n_s_value;
 static PyObject *__pyx_n_s_workerId;
 static PyObject *__pyx_n_s_zeros;
 static PyObject *__pyx_pf_12nccl_example_unique_id(CYTHON_UNUSED PyObject *__pyx_self); /* proto */
-static PyObject *__pyx_pf_12nccl_example_2inject_comms_on_handle(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_handle, PyObject *__pyx_v_nccl_inst, PyObject *__pyx_v_size, PyObject *__pyx_v_rank); /* proto */
+static PyObject *__pyx_pf_12nccl_example_2inject_comms_on_handle(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_handle, PyObject *__pyx_v_nccl_inst, PyObject *__pyx_v_ucp_worker, PyObject *__pyx_v_eps, PyObject *__pyx_v_size, PyObject *__pyx_v_rank); /* proto */
 static int __pyx_pf_12nccl_example_4nccl___cinit__(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_12nccl_example_4nccl_2get_unique_id(void); /* proto */
-static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self, PyObject *__pyx_v_nranks, PyObject *__pyx_v_commId, PyObject *__pyx_v_rank); /* proto */
-static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_12nccl_example_4nccl_10cu_device(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_12nccl_example_4nccl_12user_rank(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_12nccl_example_4nccl_14get_comm(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_12nccl_example_4nccl_16__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
-static PyObject *__pyx_pf_12nccl_example_4nccl_18__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_12nccl_example_nccl *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
+static void __pyx_pf_12nccl_example_4nccl_2__dealloc__(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_12nccl_example_4nccl_4get_unique_id(void); /* proto */
+static PyObject *__pyx_pf_12nccl_example_4nccl_6init(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self, PyObject *__pyx_v_nranks, PyObject *__pyx_v_commId, PyObject *__pyx_v_rank); /* proto */
+static PyObject *__pyx_pf_12nccl_example_4nccl_8destroy(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_12nccl_example_4nccl_10abort(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_12nccl_example_4nccl_12cu_device(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_12nccl_example_4nccl_14user_rank(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_12nccl_example_4nccl_16get_comm(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_12nccl_example_4nccl_18__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_12nccl_example_nccl *__pyx_v_self); /* proto */
+static PyObject *__pyx_pf_12nccl_example_4nccl_20__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_12nccl_example_nccl *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state); /* proto */
 static int __pyx_pf_12nccl_example_12SimpleReduce___cinit__(struct __pyx_obj_12nccl_example_SimpleReduce *__pyx_v_self, PyObject *__pyx_v_workerId, PyObject *__pyx_v_nWorkers, PyObject *__pyx_v_cuml_comm); /* proto */
 static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_2get_clique_size(struct __pyx_obj_12nccl_example_SimpleReduce *__pyx_v_self); /* proto */
 static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_4get_rank(struct __pyx_obj_12nccl_example_SimpleReduce *__pyx_v_self); /* proto */
@@ -1544,7 +1559,7 @@ static PyObject *__pyx_pf_12nccl_example_unique_id(CYTHON_UNUSED PyObject *__pyx
  *     free(uid)
  *     return c_str             # <<<<<<<<<<<<<<
  * 
- * def inject_comms_on_handle(handle, nccl_inst, size, rank):
+ * def inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank):
  */
   __Pyx_XDECREF(__pyx_r);
   __Pyx_INCREF(__pyx_v_c_str);
@@ -1574,30 +1589,36 @@ static PyObject *__pyx_pf_12nccl_example_unique_id(CYTHON_UNUSED PyObject *__pyx
 /* "nccl-example/simple_reduce.pyx":105
  *     return c_str
  * 
- * def inject_comms_on_handle(handle, nccl_inst, size, rank):             # <<<<<<<<<<<<<<
- *     cdef size_t handle_size_t = <size_t>handle.getHandle()
- *     handle_ = <cumlHandle*>handle_size_t
+ * def inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef ucp_ep_h **ucp_eps = <ucp_ep_h**> malloc(len(eps)*sizeof(ucp_ep_h*))
  */
 
 /* Python wrapper */
 static PyObject *__pyx_pw_12nccl_example_3inject_comms_on_handle(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_12nccl_example_2inject_comms_on_handle[] = "inject_comms_on_handle(handle, nccl_inst, size, rank)";
+static char __pyx_doc_12nccl_example_2inject_comms_on_handle[] = "inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank)";
 static PyMethodDef __pyx_mdef_12nccl_example_3inject_comms_on_handle = {"inject_comms_on_handle", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_12nccl_example_3inject_comms_on_handle, METH_VARARGS|METH_KEYWORDS, __pyx_doc_12nccl_example_2inject_comms_on_handle};
 static PyObject *__pyx_pw_12nccl_example_3inject_comms_on_handle(PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_handle = 0;
   PyObject *__pyx_v_nccl_inst = 0;
+  PyObject *__pyx_v_ucp_worker = 0;
+  PyObject *__pyx_v_eps = 0;
   PyObject *__pyx_v_size = 0;
   PyObject *__pyx_v_rank = 0;
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("inject_comms_on_handle (wrapper)", 0);
   {
-    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_handle,&__pyx_n_s_nccl_inst,&__pyx_n_s_size,&__pyx_n_s_rank,0};
-    PyObject* values[4] = {0,0,0,0};
+    static PyObject **__pyx_pyargnames[] = {&__pyx_n_s_handle,&__pyx_n_s_nccl_inst,&__pyx_n_s_ucp_worker,&__pyx_n_s_eps,&__pyx_n_s_size,&__pyx_n_s_rank,0};
+    PyObject* values[6] = {0,0,0,0,0,0};
     if (unlikely(__pyx_kwds)) {
       Py_ssize_t kw_args;
       const Py_ssize_t pos_args = PyTuple_GET_SIZE(__pyx_args);
       switch (pos_args) {
+        case  6: values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
+        CYTHON_FALLTHROUGH;
+        case  5: values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+        CYTHON_FALLTHROUGH;
         case  4: values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
         CYTHON_FALLTHROUGH;
         case  3: values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
@@ -1618,97 +1639,266 @@ static PyObject *__pyx_pw_12nccl_example_3inject_comms_on_handle(PyObject *__pyx
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_nccl_inst)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 4, 4, 1); __PYX_ERR(0, 105, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 6, 6, 1); __PYX_ERR(0, 105, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
-        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_size)) != 0)) kw_args--;
+        if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_ucp_worker)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 4, 4, 2); __PYX_ERR(0, 105, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 6, 6, 2); __PYX_ERR(0, 105, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  3:
-        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_rank)) != 0)) kw_args--;
+        if (likely((values[3] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_eps)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 4, 4, 3); __PYX_ERR(0, 105, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 6, 6, 3); __PYX_ERR(0, 105, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  4:
+        if (likely((values[4] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_size)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 6, 6, 4); __PYX_ERR(0, 105, __pyx_L3_error)
+        }
+        CYTHON_FALLTHROUGH;
+        case  5:
+        if (likely((values[5] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_rank)) != 0)) kw_args--;
+        else {
+          __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 6, 6, 5); __PYX_ERR(0, 105, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
         if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "inject_comms_on_handle") < 0)) __PYX_ERR(0, 105, __pyx_L3_error)
       }
-    } else if (PyTuple_GET_SIZE(__pyx_args) != 4) {
+    } else if (PyTuple_GET_SIZE(__pyx_args) != 6) {
       goto __pyx_L5_argtuple_error;
     } else {
       values[0] = PyTuple_GET_ITEM(__pyx_args, 0);
       values[1] = PyTuple_GET_ITEM(__pyx_args, 1);
       values[2] = PyTuple_GET_ITEM(__pyx_args, 2);
       values[3] = PyTuple_GET_ITEM(__pyx_args, 3);
+      values[4] = PyTuple_GET_ITEM(__pyx_args, 4);
+      values[5] = PyTuple_GET_ITEM(__pyx_args, 5);
     }
     __pyx_v_handle = values[0];
     __pyx_v_nccl_inst = values[1];
-    __pyx_v_size = values[2];
-    __pyx_v_rank = values[3];
+    __pyx_v_ucp_worker = values[2];
+    __pyx_v_eps = values[3];
+    __pyx_v_size = values[4];
+    __pyx_v_rank = values[5];
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 4, 4, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 105, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("inject_comms_on_handle", 1, 6, 6, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 105, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("nccl_example.inject_comms_on_handle", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_12nccl_example_2inject_comms_on_handle(__pyx_self, __pyx_v_handle, __pyx_v_nccl_inst, __pyx_v_size, __pyx_v_rank);
+  __pyx_r = __pyx_pf_12nccl_example_2inject_comms_on_handle(__pyx_self, __pyx_v_handle, __pyx_v_nccl_inst, __pyx_v_ucp_worker, __pyx_v_eps, __pyx_v_size, __pyx_v_rank);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_2inject_comms_on_handle(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_handle, PyObject *__pyx_v_nccl_inst, PyObject *__pyx_v_size, PyObject *__pyx_v_rank) {
+static PyObject *__pyx_pf_12nccl_example_2inject_comms_on_handle(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_handle, PyObject *__pyx_v_nccl_inst, PyObject *__pyx_v_ucp_worker, PyObject *__pyx_v_eps, PyObject *__pyx_v_size, PyObject *__pyx_v_rank) {
+  ucp_ep_h **__pyx_v_ucp_eps;
+  size_t __pyx_v_ep_st;
+  Py_ssize_t __pyx_v_i;
+  size_t __pyx_v_ucp_worker_st;
   size_t __pyx_v_handle_size_t;
   ML::cumlHandle *__pyx_v_handle_;
   size_t __pyx_v_nccl_comm_size_t;
   ncclComm_t *__pyx_v_nccl_comm_;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  size_t __pyx_t_4;
+  Py_ssize_t __pyx_t_1;
+  Py_ssize_t __pyx_t_2;
+  Py_ssize_t __pyx_t_3;
+  PyObject *__pyx_t_4 = NULL;
   int __pyx_t_5;
   int __pyx_t_6;
+  PyObject *__pyx_t_7 = NULL;
+  PyObject *__pyx_t_8 = NULL;
+  size_t __pyx_t_9;
+  int __pyx_t_10;
+  int __pyx_t_11;
   __Pyx_RefNannySetupContext("inject_comms_on_handle", 0);
 
-  /* "nccl-example/simple_reduce.pyx":106
+  /* "nccl-example/simple_reduce.pyx":107
+ * def inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank):
  * 
- * def inject_comms_on_handle(handle, nccl_inst, size, rank):
+ *     cdef ucp_ep_h **ucp_eps = <ucp_ep_h**> malloc(len(eps)*sizeof(ucp_ep_h*))             # <<<<<<<<<<<<<<
+ * 
+ *     cdef size_t ep_st
+ */
+  __pyx_t_1 = PyObject_Length(__pyx_v_eps); if (unlikely(__pyx_t_1 == ((Py_ssize_t)-1))) __PYX_ERR(0, 107, __pyx_L1_error)
+  __pyx_v_ucp_eps = ((ucp_ep_h **)malloc((__pyx_t_1 * (sizeof(ucp_ep_h *)))));
+
+  /* "nccl-example/simple_reduce.pyx":110
+ * 
+ *     cdef size_t ep_st
+ *     for i in range(len(eps)):             # <<<<<<<<<<<<<<
+ *         if eps[i] is not None:
+ *             ep_st = <size_t>eps[i].get_ep()
+ */
+  __pyx_t_1 = PyObject_Length(__pyx_v_eps); if (unlikely(__pyx_t_1 == ((Py_ssize_t)-1))) __PYX_ERR(0, 110, __pyx_L1_error)
+  __pyx_t_2 = __pyx_t_1;
+  for (__pyx_t_3 = 0; __pyx_t_3 < __pyx_t_2; __pyx_t_3+=1) {
+    __pyx_v_i = __pyx_t_3;
+
+    /* "nccl-example/simple_reduce.pyx":111
+ *     cdef size_t ep_st
+ *     for i in range(len(eps)):
+ *         if eps[i] is not None:             # <<<<<<<<<<<<<<
+ *             ep_st = <size_t>eps[i].get_ep()
+ *             print(str(eps[i].get_ep()))
+ */
+    __pyx_t_4 = __Pyx_GetItemInt(__pyx_v_eps, __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 111, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_4);
+    __pyx_t_5 = (__pyx_t_4 != Py_None);
+    __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+    __pyx_t_6 = (__pyx_t_5 != 0);
+    if (__pyx_t_6) {
+
+      /* "nccl-example/simple_reduce.pyx":112
+ *     for i in range(len(eps)):
+ *         if eps[i] is not None:
+ *             ep_st = <size_t>eps[i].get_ep()             # <<<<<<<<<<<<<<
+ *             print(str(eps[i].get_ep()))
+ *             ucp_eps[i] = <ucp_ep_h*>ep_st
+ */
+      __pyx_t_7 = __Pyx_GetItemInt(__pyx_v_eps, __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 112, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_get_ep); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 112, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_8);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __pyx_t_7 = NULL;
+      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_8))) {
+        __pyx_t_7 = PyMethod_GET_SELF(__pyx_t_8);
+        if (likely(__pyx_t_7)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_8);
+          __Pyx_INCREF(__pyx_t_7);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_8, function);
+        }
+      }
+      __pyx_t_4 = (__pyx_t_7) ? __Pyx_PyObject_CallOneArg(__pyx_t_8, __pyx_t_7) : __Pyx_PyObject_CallNoArg(__pyx_t_8);
+      __Pyx_XDECREF(__pyx_t_7); __pyx_t_7 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 112, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+      __pyx_t_9 = __Pyx_PyInt_As_size_t(__pyx_t_4); if (unlikely((__pyx_t_9 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 112, __pyx_L1_error)
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __pyx_v_ep_st = ((size_t)__pyx_t_9);
+
+      /* "nccl-example/simple_reduce.pyx":113
+ *         if eps[i] is not None:
+ *             ep_st = <size_t>eps[i].get_ep()
+ *             print(str(eps[i].get_ep()))             # <<<<<<<<<<<<<<
+ *             ucp_eps[i] = <ucp_ep_h*>ep_st
+ *         else:
+ */
+      __pyx_t_8 = __Pyx_GetItemInt(__pyx_v_eps, __pyx_v_i, Py_ssize_t, 1, PyInt_FromSsize_t, 0, 1, 1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 113, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_8);
+      __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_get_ep); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 113, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
+      __pyx_t_8 = NULL;
+      if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
+        __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_7);
+        if (likely(__pyx_t_8)) {
+          PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
+          __Pyx_INCREF(__pyx_t_8);
+          __Pyx_INCREF(function);
+          __Pyx_DECREF_SET(__pyx_t_7, function);
+        }
+      }
+      __pyx_t_4 = (__pyx_t_8) ? __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallNoArg(__pyx_t_7);
+      __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+      if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 113, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __pyx_t_7 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyUnicode_Type)), __pyx_t_4); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 113, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_7);
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+      __pyx_t_4 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_7); if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 113, __pyx_L1_error)
+      __Pyx_GOTREF(__pyx_t_4);
+      __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+      __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+
+      /* "nccl-example/simple_reduce.pyx":114
+ *             ep_st = <size_t>eps[i].get_ep()
+ *             print(str(eps[i].get_ep()))
+ *             ucp_eps[i] = <ucp_ep_h*>ep_st             # <<<<<<<<<<<<<<
+ *         else:
+ *             ucp_eps[i] = NULL
+ */
+      (__pyx_v_ucp_eps[__pyx_v_i]) = ((ucp_ep_h *)__pyx_v_ep_st);
+
+      /* "nccl-example/simple_reduce.pyx":111
+ *     cdef size_t ep_st
+ *     for i in range(len(eps)):
+ *         if eps[i] is not None:             # <<<<<<<<<<<<<<
+ *             ep_st = <size_t>eps[i].get_ep()
+ *             print(str(eps[i].get_ep()))
+ */
+      goto __pyx_L5;
+    }
+
+    /* "nccl-example/simple_reduce.pyx":116
+ *             ucp_eps[i] = <ucp_ep_h*>ep_st
+ *         else:
+ *             ucp_eps[i] = NULL             # <<<<<<<<<<<<<<
+ *     cdef size_t ucp_worker_st = <size_t>ucp_worker
+ * 
+ */
+    /*else*/ {
+      (__pyx_v_ucp_eps[__pyx_v_i]) = NULL;
+    }
+    __pyx_L5:;
+  }
+
+  /* "nccl-example/simple_reduce.pyx":117
+ *         else:
+ *             ucp_eps[i] = NULL
+ *     cdef size_t ucp_worker_st = <size_t>ucp_worker             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+  __pyx_t_9 = __Pyx_PyInt_As_size_t(__pyx_v_ucp_worker); if (unlikely((__pyx_t_9 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 117, __pyx_L1_error)
+  __pyx_v_ucp_worker_st = ((size_t)__pyx_t_9);
+
+  /* "nccl-example/simple_reduce.pyx":120
+ * 
+ * 
  *     cdef size_t handle_size_t = <size_t>handle.getHandle()             # <<<<<<<<<<<<<<
  *     handle_ = <cumlHandle*>handle_size_t
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_handle, __pyx_n_s_getHandle); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 106, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = NULL;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_3);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_handle, __pyx_n_s_getHandle); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 120, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_8 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
+    __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_7);
+    if (likely(__pyx_t_8)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_8);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __Pyx_DECREF_SET(__pyx_t_7, function);
     }
   }
-  __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 106, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 106, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_handle_size_t = ((size_t)__pyx_t_4);
+  __pyx_t_4 = (__pyx_t_8) ? __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallNoArg(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+  if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 120, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_9 = __Pyx_PyInt_As_size_t(__pyx_t_4); if (unlikely((__pyx_t_9 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 120, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_v_handle_size_t = ((size_t)__pyx_t_9);
 
-  /* "nccl-example/simple_reduce.pyx":107
- * def inject_comms_on_handle(handle, nccl_inst, size, rank):
+  /* "nccl-example/simple_reduce.pyx":121
+ * 
  *     cdef size_t handle_size_t = <size_t>handle.getHandle()
  *     handle_ = <cumlHandle*>handle_size_t             # <<<<<<<<<<<<<<
  * 
@@ -1716,69 +1906,69 @@ static PyObject *__pyx_pf_12nccl_example_2inject_comms_on_handle(CYTHON_UNUSED P
  */
   __pyx_v_handle_ = ((ML::cumlHandle *)__pyx_v_handle_size_t);
 
-  /* "nccl-example/simple_reduce.pyx":109
+  /* "nccl-example/simple_reduce.pyx":123
  *     handle_ = <cumlHandle*>handle_size_t
  * 
  *     cdef size_t nccl_comm_size_t = <size_t>nccl_inst.get_comm()             # <<<<<<<<<<<<<<
  *     nccl_comm_ = <ncclComm_t*>nccl_comm_size_t
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_nccl_inst, __pyx_n_s_get_comm); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 109, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = NULL;
-  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
-    __pyx_t_3 = PyMethod_GET_SELF(__pyx_t_2);
-    if (likely(__pyx_t_3)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_2);
-      __Pyx_INCREF(__pyx_t_3);
+  __pyx_t_7 = __Pyx_PyObject_GetAttrStr(__pyx_v_nccl_inst, __pyx_n_s_get_comm); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_7);
+  __pyx_t_8 = NULL;
+  if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_7))) {
+    __pyx_t_8 = PyMethod_GET_SELF(__pyx_t_7);
+    if (likely(__pyx_t_8)) {
+      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_7);
+      __Pyx_INCREF(__pyx_t_8);
       __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_2, function);
+      __Pyx_DECREF_SET(__pyx_t_7, function);
     }
   }
-  __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 109, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_1);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_4 = __Pyx_PyInt_As_size_t(__pyx_t_1); if (unlikely((__pyx_t_4 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 109, __pyx_L1_error)
-  __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_v_nccl_comm_size_t = ((size_t)__pyx_t_4);
+  __pyx_t_4 = (__pyx_t_8) ? __Pyx_PyObject_CallOneArg(__pyx_t_7, __pyx_t_8) : __Pyx_PyObject_CallNoArg(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
+  if (unlikely(!__pyx_t_4)) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_4);
+  __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
+  __pyx_t_9 = __Pyx_PyInt_As_size_t(__pyx_t_4); if (unlikely((__pyx_t_9 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 123, __pyx_L1_error)
+  __Pyx_DECREF(__pyx_t_4); __pyx_t_4 = 0;
+  __pyx_v_nccl_comm_size_t = ((size_t)__pyx_t_9);
 
-  /* "nccl-example/simple_reduce.pyx":110
+  /* "nccl-example/simple_reduce.pyx":124
  * 
  *     cdef size_t nccl_comm_size_t = <size_t>nccl_inst.get_comm()
  *     nccl_comm_ = <ncclComm_t*>nccl_comm_size_t             # <<<<<<<<<<<<<<
  * 
- *     inject_comms(deref(handle_), deref(nccl_comm_), NULL, NULL, size, rank)
+ *     inject_comms(deref(handle_), deref(nccl_comm_), <ucp_worker_h*>ucp_worker_st, ucp_eps, size, rank)
  */
   __pyx_v_nccl_comm_ = ((ncclComm_t *)__pyx_v_nccl_comm_size_t);
 
-  /* "nccl-example/simple_reduce.pyx":112
+  /* "nccl-example/simple_reduce.pyx":126
  *     nccl_comm_ = <ncclComm_t*>nccl_comm_size_t
  * 
- *     inject_comms(deref(handle_), deref(nccl_comm_), NULL, NULL, size, rank)             # <<<<<<<<<<<<<<
+ *     inject_comms(deref(handle_), deref(nccl_comm_), <ucp_worker_h*>ucp_worker_st, ucp_eps, size, rank)             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_t_5 = __Pyx_PyInt_As_int(__pyx_v_size); if (unlikely((__pyx_t_5 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 112, __pyx_L1_error)
-  __pyx_t_6 = __Pyx_PyInt_As_int(__pyx_v_rank); if (unlikely((__pyx_t_6 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 112, __pyx_L1_error)
-  inject_comms((*__pyx_v_handle_), (*__pyx_v_nccl_comm_), NULL, NULL, __pyx_t_5, __pyx_t_6);
+  __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_v_size); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 126, __pyx_L1_error)
+  __pyx_t_11 = __Pyx_PyInt_As_int(__pyx_v_rank); if (unlikely((__pyx_t_11 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 126, __pyx_L1_error)
+  inject_comms((*__pyx_v_handle_), (*__pyx_v_nccl_comm_), ((ucp_worker_h *)__pyx_v_ucp_worker_st), __pyx_v_ucp_eps, __pyx_t_10, __pyx_t_11);
 
   /* "nccl-example/simple_reduce.pyx":105
  *     return c_str
  * 
- * def inject_comms_on_handle(handle, nccl_inst, size, rank):             # <<<<<<<<<<<<<<
- *     cdef size_t handle_size_t = <size_t>handle.getHandle()
- *     handle_ = <cumlHandle*>handle_size_t
+ * def inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef ucp_ep_h **ucp_eps = <ucp_ep_h**> malloc(len(eps)*sizeof(ucp_ep_h*))
  */
 
   /* function exit code */
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_XDECREF(__pyx_t_4);
+  __Pyx_XDECREF(__pyx_t_7);
+  __Pyx_XDECREF(__pyx_t_8);
   __Pyx_AddTraceback("nccl_example.inject_comms_on_handle", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
@@ -1787,7 +1977,7 @@ static PyObject *__pyx_pf_12nccl_example_2inject_comms_on_handle(CYTHON_UNUSED P
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":124
+/* "nccl-example/simple_reduce.pyx":138
  *     cdef int rank
  * 
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -1816,16 +2006,16 @@ static int __pyx_pf_12nccl_example_4nccl___cinit__(struct __pyx_obj_12nccl_examp
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "nccl-example/simple_reduce.pyx":125
+  /* "nccl-example/simple_reduce.pyx":139
  * 
  *     def __cinit__(self):
  *         self.comm = <ncclComm_t*>malloc(sizeof(ncclComm_t))             # <<<<<<<<<<<<<<
  * 
- * #     def __dealloc__(self):
+ *     def __dealloc__(self):
  */
   __pyx_v_self->comm = ((ncclComm_t *)malloc((sizeof(ncclComm_t))));
 
-  /* "nccl-example/simple_reduce.pyx":124
+  /* "nccl-example/simple_reduce.pyx":138
  *     cdef int rank
  * 
  *     def __cinit__(self):             # <<<<<<<<<<<<<<
@@ -1839,7 +2029,90 @@ static int __pyx_pf_12nccl_example_4nccl___cinit__(struct __pyx_obj_12nccl_examp
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":136
+/* "nccl-example/simple_reduce.pyx":141
+ *         self.comm = <ncclComm_t*>malloc(sizeof(ncclComm_t))
+ * 
+ *     def __dealloc__(self):             # <<<<<<<<<<<<<<
+ * 
+ *          comm_ = <ncclComm_t*>self.comm
+ */
+
+/* Python wrapper */
+static void __pyx_pw_12nccl_example_4nccl_3__dealloc__(PyObject *__pyx_v_self); /*proto*/
+static void __pyx_pw_12nccl_example_4nccl_3__dealloc__(PyObject *__pyx_v_self) {
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("__dealloc__ (wrapper)", 0);
+  __pyx_pf_12nccl_example_4nccl_2__dealloc__(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+}
+
+static void __pyx_pf_12nccl_example_4nccl_2__dealloc__(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
+  ncclComm_t *__pyx_v_comm_;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  __Pyx_RefNannySetupContext("__dealloc__", 0);
+
+  /* "nccl-example/simple_reduce.pyx":143
+ *     def __dealloc__(self):
+ * 
+ *          comm_ = <ncclComm_t*>self.comm             # <<<<<<<<<<<<<<
+ * 
+ *          if comm_ != NULL:
+ */
+  __pyx_v_comm_ = ((ncclComm_t *)__pyx_v_self->comm);
+
+  /* "nccl-example/simple_reduce.pyx":145
+ *          comm_ = <ncclComm_t*>self.comm
+ * 
+ *          if comm_ != NULL:             # <<<<<<<<<<<<<<
+ *              free(self.comm)
+ *              self.comm = NULL
+ */
+  __pyx_t_1 = ((__pyx_v_comm_ != NULL) != 0);
+  if (__pyx_t_1) {
+
+    /* "nccl-example/simple_reduce.pyx":146
+ * 
+ *          if comm_ != NULL:
+ *              free(self.comm)             # <<<<<<<<<<<<<<
+ *              self.comm = NULL
+ * 
+ */
+    free(__pyx_v_self->comm);
+
+    /* "nccl-example/simple_reduce.pyx":147
+ *          if comm_ != NULL:
+ *              free(self.comm)
+ *              self.comm = NULL             # <<<<<<<<<<<<<<
+ * 
+ *     @staticmethod
+ */
+    __pyx_v_self->comm = NULL;
+
+    /* "nccl-example/simple_reduce.pyx":145
+ *          comm_ = <ncclComm_t*>self.comm
+ * 
+ *          if comm_ != NULL:             # <<<<<<<<<<<<<<
+ *              free(self.comm)
+ *              self.comm = NULL
+ */
+  }
+
+  /* "nccl-example/simple_reduce.pyx":141
+ *         self.comm = <ncclComm_t*>malloc(sizeof(ncclComm_t))
+ * 
+ *     def __dealloc__(self):             # <<<<<<<<<<<<<<
+ * 
+ *          comm_ = <ncclComm_t*>self.comm
+ */
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+}
+
+/* "nccl-example/simple_reduce.pyx":150
  * 
  *     @staticmethod
  *     def get_unique_id():             # <<<<<<<<<<<<<<
@@ -1848,24 +2121,24 @@ static int __pyx_pf_12nccl_example_4nccl___cinit__(struct __pyx_obj_12nccl_examp
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_4nccl_3get_unique_id(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_12nccl_example_4nccl_2get_unique_id[] = "nccl.get_unique_id()";
-static PyMethodDef __pyx_mdef_12nccl_example_4nccl_3get_unique_id = {"get_unique_id", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_12nccl_example_4nccl_3get_unique_id, METH_VARARGS|METH_KEYWORDS, __pyx_doc_12nccl_example_4nccl_2get_unique_id};
-static PyObject *__pyx_pw_12nccl_example_4nccl_3get_unique_id(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_12nccl_example_4nccl_5get_unique_id(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_12nccl_example_4nccl_4get_unique_id[] = "nccl.get_unique_id()";
+static PyMethodDef __pyx_mdef_12nccl_example_4nccl_5get_unique_id = {"get_unique_id", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_12nccl_example_4nccl_5get_unique_id, METH_VARARGS|METH_KEYWORDS, __pyx_doc_12nccl_example_4nccl_4get_unique_id};
+static PyObject *__pyx_pw_12nccl_example_4nccl_5get_unique_id(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("get_unique_id (wrapper)", 0);
   if (unlikely(PyTuple_GET_SIZE(__pyx_args) > 0)) {
     __Pyx_RaiseArgtupleInvalid("get_unique_id", 1, 0, 0, PyTuple_GET_SIZE(__pyx_args)); return NULL;}
   if (unlikely(__pyx_kwds) && unlikely(PyDict_Size(__pyx_kwds) > 0) && unlikely(!__Pyx_CheckKeywordStrings(__pyx_kwds, "get_unique_id", 0))) return NULL;
-  __pyx_r = __pyx_pf_12nccl_example_4nccl_2get_unique_id();
+  __pyx_r = __pyx_pf_12nccl_example_4nccl_4get_unique_id();
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_4nccl_2get_unique_id(void) {
+static PyObject *__pyx_pf_12nccl_example_4nccl_4get_unique_id(void) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -1873,7 +2146,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_2get_unique_id(void) {
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("get_unique_id", 0);
 
-  /* "nccl-example/simple_reduce.pyx":137
+  /* "nccl-example/simple_reduce.pyx":151
  *     @staticmethod
  *     def get_unique_id():
  *         return unique_id()             # <<<<<<<<<<<<<<
@@ -1881,7 +2154,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_2get_unique_id(void) {
  *     def init(self, nranks, commId, rank):
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_unique_id); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 137, __pyx_L1_error)
+  __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_unique_id); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 151, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && unlikely(PyMethod_Check(__pyx_t_2))) {
@@ -1895,14 +2168,14 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_2get_unique_id(void) {
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 137, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 151, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "nccl-example/simple_reduce.pyx":136
+  /* "nccl-example/simple_reduce.pyx":150
  * 
  *     @staticmethod
  *     def get_unique_id():             # <<<<<<<<<<<<<<
@@ -1923,7 +2196,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_2get_unique_id(void) {
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":139
+/* "nccl-example/simple_reduce.pyx":153
  *         return unique_id()
  * 
  *     def init(self, nranks, commId, rank):             # <<<<<<<<<<<<<<
@@ -1932,9 +2205,9 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_2get_unique_id(void) {
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_4nccl_5init(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
-static char __pyx_doc_12nccl_example_4nccl_4init[] = "nccl.init(self, nranks, commId, rank)";
-static PyObject *__pyx_pw_12nccl_example_4nccl_5init(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
+static PyObject *__pyx_pw_12nccl_example_4nccl_7init(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds); /*proto*/
+static char __pyx_doc_12nccl_example_4nccl_6init[] = "nccl.init(self, nranks, commId, rank)";
+static PyObject *__pyx_pw_12nccl_example_4nccl_7init(PyObject *__pyx_v_self, PyObject *__pyx_args, PyObject *__pyx_kwds) {
   PyObject *__pyx_v_nranks = 0;
   PyObject *__pyx_v_commId = 0;
   PyObject *__pyx_v_rank = 0;
@@ -1966,17 +2239,17 @@ static PyObject *__pyx_pw_12nccl_example_4nccl_5init(PyObject *__pyx_v_self, PyO
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_commId)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("init", 1, 3, 3, 1); __PYX_ERR(0, 139, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("init", 1, 3, 3, 1); __PYX_ERR(0, 153, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
         if (likely((values[2] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_rank)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("init", 1, 3, 3, 2); __PYX_ERR(0, 139, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("init", 1, 3, 3, 2); __PYX_ERR(0, 153, __pyx_L3_error)
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "init") < 0)) __PYX_ERR(0, 139, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "init") < 0)) __PYX_ERR(0, 153, __pyx_L3_error)
       }
     } else if (PyTuple_GET_SIZE(__pyx_args) != 3) {
       goto __pyx_L5_argtuple_error;
@@ -1991,20 +2264,20 @@ static PyObject *__pyx_pw_12nccl_example_4nccl_5init(PyObject *__pyx_v_self, PyO
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("init", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 139, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("init", 1, 3, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 153, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("nccl_example.nccl.init", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
   return NULL;
   __pyx_L4_argument_unpacking_done:;
-  __pyx_r = __pyx_pf_12nccl_example_4nccl_4init(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self), __pyx_v_nranks, __pyx_v_commId, __pyx_v_rank);
+  __pyx_r = __pyx_pf_12nccl_example_4nccl_6init(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self), __pyx_v_nranks, __pyx_v_commId, __pyx_v_rank);
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self, PyObject *__pyx_v_nranks, PyObject *__pyx_v_commId, PyObject *__pyx_v_rank) {
+static PyObject *__pyx_pf_12nccl_example_4nccl_6init(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self, PyObject *__pyx_v_nranks, PyObject *__pyx_v_commId, PyObject *__pyx_v_rank) {
   ncclUniqueId *__pyx_v_ident;
   ncclComm_t *__pyx_v_comm_;
   ncclResult_t __pyx_v_result;
@@ -2019,27 +2292,27 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_exa
   PyObject *__pyx_t_6 = NULL;
   __Pyx_RefNannySetupContext("init", 0);
 
-  /* "nccl-example/simple_reduce.pyx":141
+  /* "nccl-example/simple_reduce.pyx":155
  *     def init(self, nranks, commId, rank):
  * 
  *         self.size = nranks             # <<<<<<<<<<<<<<
  *         self.rank = rank
  * 
  */
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_nranks); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 141, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_nranks); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 155, __pyx_L1_error)
   __pyx_v_self->size = __pyx_t_1;
 
-  /* "nccl-example/simple_reduce.pyx":142
+  /* "nccl-example/simple_reduce.pyx":156
  * 
  *         self.size = nranks
  *         self.rank = rank             # <<<<<<<<<<<<<<
  * 
  *         cdef ncclUniqueId *ident = <ncclUniqueId*>malloc(sizeof(ncclUniqueId))
  */
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_rank); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 142, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_rank); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 156, __pyx_L1_error)
   __pyx_v_self->rank = __pyx_t_1;
 
-  /* "nccl-example/simple_reduce.pyx":144
+  /* "nccl-example/simple_reduce.pyx":158
  *         self.rank = rank
  * 
  *         cdef ncclUniqueId *ident = <ncclUniqueId*>malloc(sizeof(ncclUniqueId))             # <<<<<<<<<<<<<<
@@ -2048,17 +2321,17 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_exa
  */
   __pyx_v_ident = ((ncclUniqueId *)malloc((sizeof(ncclUniqueId))));
 
-  /* "nccl-example/simple_reduce.pyx":145
+  /* "nccl-example/simple_reduce.pyx":159
  * 
  *         cdef ncclUniqueId *ident = <ncclUniqueId*>malloc(sizeof(ncclUniqueId))
  *         ncclUniqueIdFromChar(ident, commId)             # <<<<<<<<<<<<<<
  * 
  *         comm_ = <ncclComm_t*>self.comm
  */
-  __pyx_t_2 = __Pyx_PyObject_AsWritableString(__pyx_v_commId); if (unlikely((!__pyx_t_2) && PyErr_Occurred())) __PYX_ERR(0, 145, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_AsWritableString(__pyx_v_commId); if (unlikely((!__pyx_t_2) && PyErr_Occurred())) __PYX_ERR(0, 159, __pyx_L1_error)
   NCCLExample::ncclUniqueIdFromChar(__pyx_v_ident, __pyx_t_2);
 
-  /* "nccl-example/simple_reduce.pyx":147
+  /* "nccl-example/simple_reduce.pyx":161
  *         ncclUniqueIdFromChar(ident, commId)
  * 
  *         comm_ = <ncclComm_t*>self.comm             # <<<<<<<<<<<<<<
@@ -2067,18 +2340,18 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_exa
  */
   __pyx_v_comm_ = ((ncclComm_t *)__pyx_v_self->comm);
 
-  /* "nccl-example/simple_reduce.pyx":149
+  /* "nccl-example/simple_reduce.pyx":163
  *         comm_ = <ncclComm_t*>self.comm
  * 
  *         cdef ncclResult_t result = ncclCommInitRank(comm_, nranks, deref(ident), rank)             # <<<<<<<<<<<<<<
  * 
  *         if result != ncclSuccess:
  */
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_nranks); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 149, __pyx_L1_error)
-  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_rank); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 149, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_nranks); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 163, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyInt_As_int(__pyx_v_rank); if (unlikely((__pyx_t_3 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 163, __pyx_L1_error)
   __pyx_v_result = ncclCommInitRank(__pyx_v_comm_, __pyx_t_1, (*__pyx_v_ident), __pyx_t_3);
 
-  /* "nccl-example/simple_reduce.pyx":151
+  /* "nccl-example/simple_reduce.pyx":165
  *         cdef ncclResult_t result = ncclCommInitRank(comm_, nranks, deref(ident), rank)
  * 
  *         if result != ncclSuccess:             # <<<<<<<<<<<<<<
@@ -2088,7 +2361,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_exa
   __pyx_t_4 = ((__pyx_v_result != ncclSuccess) != 0);
   if (__pyx_t_4) {
 
-    /* "nccl-example/simple_reduce.pyx":152
+    /* "nccl-example/simple_reduce.pyx":166
  * 
  *         if result != ncclSuccess:
  *             err_str = ncclGetErrorString(result)             # <<<<<<<<<<<<<<
@@ -2097,24 +2370,24 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_exa
  */
     __pyx_v_err_str = ncclGetErrorString(__pyx_v_result);
 
-    /* "nccl-example/simple_reduce.pyx":153
+    /* "nccl-example/simple_reduce.pyx":167
  *         if result != ncclSuccess:
  *             err_str = ncclGetErrorString(result)
  *             print("NCCL_ERROR: %s" % err_str)             # <<<<<<<<<<<<<<
  * 
  *     def destroy(self):
  */
-    __pyx_t_5 = __Pyx_PyBytes_FromString(__pyx_v_err_str); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyBytes_FromString(__pyx_v_err_str); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
-    __pyx_t_6 = PyUnicode_Format(__pyx_kp_u_NCCL_ERROR_s, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __pyx_t_6 = PyUnicode_Format(__pyx_kp_u_NCCL_ERROR_s, __pyx_t_5); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-    __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 153, __pyx_L1_error)
+    __pyx_t_5 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_6); if (unlikely(!__pyx_t_5)) __PYX_ERR(0, 167, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_5);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
 
-    /* "nccl-example/simple_reduce.pyx":151
+    /* "nccl-example/simple_reduce.pyx":165
  *         cdef ncclResult_t result = ncclCommInitRank(comm_, nranks, deref(ident), rank)
  * 
  *         if result != ncclSuccess:             # <<<<<<<<<<<<<<
@@ -2123,7 +2396,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_exa
  */
   }
 
-  /* "nccl-example/simple_reduce.pyx":139
+  /* "nccl-example/simple_reduce.pyx":153
  *         return unique_id()
  * 
  *     def init(self, nranks, commId, rank):             # <<<<<<<<<<<<<<
@@ -2145,7 +2418,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_exa
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":155
+/* "nccl-example/simple_reduce.pyx":169
  *             print("NCCL_ERROR: %s" % err_str)
  * 
  *     def destroy(self):             # <<<<<<<<<<<<<<
@@ -2154,20 +2427,20 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_4init(struct __pyx_obj_12nccl_exa
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_4nccl_7destroy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_12nccl_example_4nccl_6destroy[] = "nccl.destroy(self)";
-static PyObject *__pyx_pw_12nccl_example_4nccl_7destroy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_12nccl_example_4nccl_9destroy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_12nccl_example_4nccl_8destroy[] = "nccl.destroy(self)";
+static PyObject *__pyx_pw_12nccl_example_4nccl_9destroy(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("destroy (wrapper)", 0);
-  __pyx_r = __pyx_pf_12nccl_example_4nccl_6destroy(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
+  __pyx_r = __pyx_pf_12nccl_example_4nccl_8destroy(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
+static PyObject *__pyx_pf_12nccl_example_4nccl_8destroy(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
   ncclComm_t *__pyx_v_comm_;
   ncclResult_t __pyx_v_result;
   char const *__pyx_v_err_str;
@@ -2178,7 +2451,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("destroy", 0);
 
-  /* "nccl-example/simple_reduce.pyx":157
+  /* "nccl-example/simple_reduce.pyx":171
  *     def destroy(self):
  * 
  *         comm_ = <ncclComm_t*>self.comm             # <<<<<<<<<<<<<<
@@ -2187,7 +2460,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
  */
   __pyx_v_comm_ = ((ncclComm_t *)__pyx_v_self->comm);
 
-  /* "nccl-example/simple_reduce.pyx":160
+  /* "nccl-example/simple_reduce.pyx":174
  * 
  *         cdef ncclResult_t result
  *         if comm_ != NULL:             # <<<<<<<<<<<<<<
@@ -2197,7 +2470,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
   __pyx_t_1 = ((__pyx_v_comm_ != NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "nccl-example/simple_reduce.pyx":161
+    /* "nccl-example/simple_reduce.pyx":175
  *         cdef ncclResult_t result
  *         if comm_ != NULL:
  *             result = ncclCommDestroy(deref(comm_))             # <<<<<<<<<<<<<<
@@ -2206,7 +2479,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
  */
     __pyx_v_result = ncclCommDestroy((*__pyx_v_comm_));
 
-    /* "nccl-example/simple_reduce.pyx":163
+    /* "nccl-example/simple_reduce.pyx":177
  *             result = ncclCommDestroy(deref(comm_))
  * 
  *             if result != ncclSuccess:             # <<<<<<<<<<<<<<
@@ -2216,7 +2489,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
     __pyx_t_1 = ((__pyx_v_result != ncclSuccess) != 0);
     if (__pyx_t_1) {
 
-      /* "nccl-example/simple_reduce.pyx":164
+      /* "nccl-example/simple_reduce.pyx":178
  * 
  *             if result != ncclSuccess:
  *                 err_str = ncclGetErrorString(result)             # <<<<<<<<<<<<<<
@@ -2225,24 +2498,24 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
  */
       __pyx_v_err_str = ncclGetErrorString(__pyx_v_result);
 
-      /* "nccl-example/simple_reduce.pyx":165
+      /* "nccl-example/simple_reduce.pyx":179
  *             if result != ncclSuccess:
  *                 err_str = ncclGetErrorString(result)
  *                 print("NCCL_ERROR: %s" % err_str)             # <<<<<<<<<<<<<<
  * 
- *             free(comm_)
+ *             free(self.comm)
  */
-      __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_err_str); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_err_str); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 179, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_NCCL_ERROR_s, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_NCCL_ERROR_s, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 179, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 165, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 179, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "nccl-example/simple_reduce.pyx":163
+      /* "nccl-example/simple_reduce.pyx":177
  *             result = ncclCommDestroy(deref(comm_))
  * 
  *             if result != ncclSuccess:             # <<<<<<<<<<<<<<
@@ -2251,16 +2524,25 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
  */
     }
 
-    /* "nccl-example/simple_reduce.pyx":167
+    /* "nccl-example/simple_reduce.pyx":181
  *                 print("NCCL_ERROR: %s" % err_str)
  * 
- *             free(comm_)             # <<<<<<<<<<<<<<
+ *             free(self.comm)             # <<<<<<<<<<<<<<
+ *             self.comm = NULL
+ * 
+ */
+    free(__pyx_v_self->comm);
+
+    /* "nccl-example/simple_reduce.pyx":182
+ * 
+ *             free(self.comm)
+ *             self.comm = NULL             # <<<<<<<<<<<<<<
  * 
  *     def abort(self):
  */
-    free(__pyx_v_comm_);
+    __pyx_v_self->comm = NULL;
 
-    /* "nccl-example/simple_reduce.pyx":160
+    /* "nccl-example/simple_reduce.pyx":174
  * 
  *         cdef ncclResult_t result
  *         if comm_ != NULL:             # <<<<<<<<<<<<<<
@@ -2269,7 +2551,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
  */
   }
 
-  /* "nccl-example/simple_reduce.pyx":155
+  /* "nccl-example/simple_reduce.pyx":169
  *             print("NCCL_ERROR: %s" % err_str)
  * 
  *     def destroy(self):             # <<<<<<<<<<<<<<
@@ -2291,8 +2573,8 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":169
- *             free(comm_)
+/* "nccl-example/simple_reduce.pyx":184
+ *             self.comm = NULL
  * 
  *     def abort(self):             # <<<<<<<<<<<<<<
  * 
@@ -2300,20 +2582,20 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_6destroy(struct __pyx_obj_12nccl_
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_4nccl_9abort(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_12nccl_example_4nccl_8abort[] = "nccl.abort(self)";
-static PyObject *__pyx_pw_12nccl_example_4nccl_9abort(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_12nccl_example_4nccl_11abort(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_12nccl_example_4nccl_10abort[] = "nccl.abort(self)";
+static PyObject *__pyx_pw_12nccl_example_4nccl_11abort(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("abort (wrapper)", 0);
-  __pyx_r = __pyx_pf_12nccl_example_4nccl_8abort(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
+  __pyx_r = __pyx_pf_12nccl_example_4nccl_10abort(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
+static PyObject *__pyx_pf_12nccl_example_4nccl_10abort(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
   ncclComm_t *__pyx_v_comm_;
   ncclResult_t __pyx_v_result;
   char const *__pyx_v_err_str;
@@ -2324,7 +2606,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("abort", 0);
 
-  /* "nccl-example/simple_reduce.pyx":171
+  /* "nccl-example/simple_reduce.pyx":186
  *     def abort(self):
  * 
  *         comm_ = <ncclComm_t*>self.comm             # <<<<<<<<<<<<<<
@@ -2333,7 +2615,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
  */
   __pyx_v_comm_ = ((ncclComm_t *)__pyx_v_self->comm);
 
-  /* "nccl-example/simple_reduce.pyx":173
+  /* "nccl-example/simple_reduce.pyx":188
  *         comm_ = <ncclComm_t*>self.comm
  *         cdef ncclResult_t result
  *         if comm_ != NULL:             # <<<<<<<<<<<<<<
@@ -2343,7 +2625,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
   __pyx_t_1 = ((__pyx_v_comm_ != NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "nccl-example/simple_reduce.pyx":174
+    /* "nccl-example/simple_reduce.pyx":189
  *         cdef ncclResult_t result
  *         if comm_ != NULL:
  *             result = ncclCommAbort(deref(comm_))             # <<<<<<<<<<<<<<
@@ -2352,7 +2634,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
  */
     __pyx_v_result = ncclCommAbort((*__pyx_v_comm_));
 
-    /* "nccl-example/simple_reduce.pyx":176
+    /* "nccl-example/simple_reduce.pyx":191
  *             result = ncclCommAbort(deref(comm_))
  * 
  *             if result != ncclSuccess:             # <<<<<<<<<<<<<<
@@ -2362,7 +2644,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
     __pyx_t_1 = ((__pyx_v_result != ncclSuccess) != 0);
     if (__pyx_t_1) {
 
-      /* "nccl-example/simple_reduce.pyx":177
+      /* "nccl-example/simple_reduce.pyx":192
  * 
  *             if result != ncclSuccess:
  *                 err_str = ncclGetErrorString(result)             # <<<<<<<<<<<<<<
@@ -2371,24 +2653,24 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
  */
       __pyx_v_err_str = ncclGetErrorString(__pyx_v_result);
 
-      /* "nccl-example/simple_reduce.pyx":178
+      /* "nccl-example/simple_reduce.pyx":193
  *             if result != ncclSuccess:
  *                 err_str = ncclGetErrorString(result)
  *                 print("NCCL_ERROR: %s" % err_str)             # <<<<<<<<<<<<<<
  *             free(comm_)
- * 
+ *             self.comm = NULL
  */
-      __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_err_str); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_err_str); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 193, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_NCCL_ERROR_s, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 178, __pyx_L1_error)
+      __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_NCCL_ERROR_s, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 193, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 178, __pyx_L1_error)
+      __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 193, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-      /* "nccl-example/simple_reduce.pyx":176
+      /* "nccl-example/simple_reduce.pyx":191
  *             result = ncclCommAbort(deref(comm_))
  * 
  *             if result != ncclSuccess:             # <<<<<<<<<<<<<<
@@ -2397,16 +2679,25 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
  */
     }
 
-    /* "nccl-example/simple_reduce.pyx":179
+    /* "nccl-example/simple_reduce.pyx":194
  *                 err_str = ncclGetErrorString(result)
  *                 print("NCCL_ERROR: %s" % err_str)
  *             free(comm_)             # <<<<<<<<<<<<<<
- * 
+ *             self.comm = NULL
  * 
  */
     free(__pyx_v_comm_);
 
-    /* "nccl-example/simple_reduce.pyx":173
+    /* "nccl-example/simple_reduce.pyx":195
+ *                 print("NCCL_ERROR: %s" % err_str)
+ *             free(comm_)
+ *             self.comm = NULL             # <<<<<<<<<<<<<<
+ * 
+ * 
+ */
+    __pyx_v_self->comm = NULL;
+
+    /* "nccl-example/simple_reduce.pyx":188
  *         comm_ = <ncclComm_t*>self.comm
  *         cdef ncclResult_t result
  *         if comm_ != NULL:             # <<<<<<<<<<<<<<
@@ -2415,8 +2706,8 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
  */
   }
 
-  /* "nccl-example/simple_reduce.pyx":169
- *             free(comm_)
+  /* "nccl-example/simple_reduce.pyx":184
+ *             self.comm = NULL
  * 
  *     def abort(self):             # <<<<<<<<<<<<<<
  * 
@@ -2437,7 +2728,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":182
+/* "nccl-example/simple_reduce.pyx":198
  * 
  * 
  *     def cu_device(self):             # <<<<<<<<<<<<<<
@@ -2446,20 +2737,20 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_8abort(struct __pyx_obj_12nccl_ex
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_4nccl_11cu_device(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_12nccl_example_4nccl_10cu_device[] = "nccl.cu_device(self)";
-static PyObject *__pyx_pw_12nccl_example_4nccl_11cu_device(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_12nccl_example_4nccl_13cu_device(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_12nccl_example_4nccl_12cu_device[] = "nccl.cu_device(self)";
+static PyObject *__pyx_pw_12nccl_example_4nccl_13cu_device(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("cu_device (wrapper)", 0);
-  __pyx_r = __pyx_pf_12nccl_example_4nccl_10cu_device(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
+  __pyx_r = __pyx_pf_12nccl_example_4nccl_12cu_device(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_4nccl_10cu_device(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
+static PyObject *__pyx_pf_12nccl_example_4nccl_12cu_device(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
   int *__pyx_v_dev;
   ncclComm_t *__pyx_v_comm_;
   ncclResult_t __pyx_v_result;
@@ -2472,7 +2763,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_10cu_device(struct __pyx_obj_12nc
   PyObject *__pyx_t_3 = NULL;
   __Pyx_RefNannySetupContext("cu_device", 0);
 
-  /* "nccl-example/simple_reduce.pyx":183
+  /* "nccl-example/simple_reduce.pyx":199
  * 
  *     def cu_device(self):
  *         cdef int *dev = <int*>malloc(sizeof(int))             # <<<<<<<<<<<<<<
@@ -2481,7 +2772,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_10cu_device(struct __pyx_obj_12nc
  */
   __pyx_v_dev = ((int *)malloc((sizeof(int))));
 
-  /* "nccl-example/simple_reduce.pyx":185
+  /* "nccl-example/simple_reduce.pyx":201
  *         cdef int *dev = <int*>malloc(sizeof(int))
  * 
  *         comm_ = <ncclComm_t*>self.comm             # <<<<<<<<<<<<<<
@@ -2490,7 +2781,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_10cu_device(struct __pyx_obj_12nc
  */
   __pyx_v_comm_ = ((ncclComm_t *)__pyx_v_self->comm);
 
-  /* "nccl-example/simple_reduce.pyx":186
+  /* "nccl-example/simple_reduce.pyx":202
  * 
  *         comm_ = <ncclComm_t*>self.comm
  *         cdef ncclResult_t result = ncclCommCuDevice(deref(comm_), dev)             # <<<<<<<<<<<<<<
@@ -2499,167 +2790,8 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_10cu_device(struct __pyx_obj_12nc
  */
   __pyx_v_result = ncclCommCuDevice((*__pyx_v_comm_), __pyx_v_dev);
 
-  /* "nccl-example/simple_reduce.pyx":188
- *         cdef ncclResult_t result = ncclCommCuDevice(deref(comm_), dev)
- * 
- *         if result != ncclSuccess:             # <<<<<<<<<<<<<<
- *             err_str = ncclGetErrorString(result)
- *             print("NCCL_ERROR: %s" % err_str)
- */
-  __pyx_t_1 = ((__pyx_v_result != ncclSuccess) != 0);
-  if (__pyx_t_1) {
-
-    /* "nccl-example/simple_reduce.pyx":189
- * 
- *         if result != ncclSuccess:
- *             err_str = ncclGetErrorString(result)             # <<<<<<<<<<<<<<
- *             print("NCCL_ERROR: %s" % err_str)
- * 
- */
-    __pyx_v_err_str = ncclGetErrorString(__pyx_v_result);
-
-    /* "nccl-example/simple_reduce.pyx":190
- *         if result != ncclSuccess:
- *             err_str = ncclGetErrorString(result)
- *             print("NCCL_ERROR: %s" % err_str)             # <<<<<<<<<<<<<<
- * 
- *         ret = dev[0]
- */
-    __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_err_str); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_NCCL_ERROR_s, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 190, __pyx_L1_error)
-    __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-
-    /* "nccl-example/simple_reduce.pyx":188
- *         cdef ncclResult_t result = ncclCommCuDevice(deref(comm_), dev)
- * 
- *         if result != ncclSuccess:             # <<<<<<<<<<<<<<
- *             err_str = ncclGetErrorString(result)
- *             print("NCCL_ERROR: %s" % err_str)
- */
-  }
-
-  /* "nccl-example/simple_reduce.pyx":192
- *             print("NCCL_ERROR: %s" % err_str)
- * 
- *         ret = dev[0]             # <<<<<<<<<<<<<<
- *         free(dev)
- *         return ret
- */
-  __pyx_v_ret = (__pyx_v_dev[0]);
-
-  /* "nccl-example/simple_reduce.pyx":193
- * 
- *         ret = dev[0]
- *         free(dev)             # <<<<<<<<<<<<<<
- *         return ret
- * 
- */
-  free(__pyx_v_dev);
-
-  /* "nccl-example/simple_reduce.pyx":194
- *         ret = dev[0]
- *         free(dev)
- *         return ret             # <<<<<<<<<<<<<<
- * 
- *     def user_rank(self):
- */
-  __Pyx_XDECREF(__pyx_r);
-  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_ret); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 194, __pyx_L1_error)
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_r = __pyx_t_2;
-  __pyx_t_2 = 0;
-  goto __pyx_L0;
-
-  /* "nccl-example/simple_reduce.pyx":182
- * 
- * 
- *     def cu_device(self):             # <<<<<<<<<<<<<<
- *         cdef int *dev = <int*>malloc(sizeof(int))
- * 
- */
-
-  /* function exit code */
-  __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_2);
-  __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_AddTraceback("nccl_example.nccl.cu_device", __pyx_clineno, __pyx_lineno, __pyx_filename);
-  __pyx_r = NULL;
-  __pyx_L0:;
-  __Pyx_XGIVEREF(__pyx_r);
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-/* "nccl-example/simple_reduce.pyx":196
- *         return ret
- * 
- *     def user_rank(self):             # <<<<<<<<<<<<<<
- * 
- *         cdef int *rank = <int*>malloc(sizeof(int))
- */
-
-/* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_4nccl_13user_rank(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_12nccl_example_4nccl_12user_rank[] = "nccl.user_rank(self)";
-static PyObject *__pyx_pw_12nccl_example_4nccl_13user_rank(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
-  PyObject *__pyx_r = 0;
-  __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("user_rank (wrapper)", 0);
-  __pyx_r = __pyx_pf_12nccl_example_4nccl_12user_rank(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
-
-  /* function exit code */
-  __Pyx_RefNannyFinishContext();
-  return __pyx_r;
-}
-
-static PyObject *__pyx_pf_12nccl_example_4nccl_12user_rank(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
-  int *__pyx_v_rank;
-  ncclComm_t *__pyx_v_comm_;
-  ncclResult_t __pyx_v_result;
-  char const *__pyx_v_err_str;
-  int __pyx_v_ret;
-  PyObject *__pyx_r = NULL;
-  __Pyx_RefNannyDeclarations
-  int __pyx_t_1;
-  PyObject *__pyx_t_2 = NULL;
-  PyObject *__pyx_t_3 = NULL;
-  __Pyx_RefNannySetupContext("user_rank", 0);
-
-  /* "nccl-example/simple_reduce.pyx":198
- *     def user_rank(self):
- * 
- *         cdef int *rank = <int*>malloc(sizeof(int))             # <<<<<<<<<<<<<<
- * 
- *         comm_ = <ncclComm_t*>self.comm
- */
-  __pyx_v_rank = ((int *)malloc((sizeof(int))));
-
-  /* "nccl-example/simple_reduce.pyx":200
- *         cdef int *rank = <int*>malloc(sizeof(int))
- * 
- *         comm_ = <ncclComm_t*>self.comm             # <<<<<<<<<<<<<<
- * 
- *         cdef ncclResult_t result = ncclCommUserRank(deref(comm_), rank)
- */
-  __pyx_v_comm_ = ((ncclComm_t *)__pyx_v_self->comm);
-
-  /* "nccl-example/simple_reduce.pyx":202
- *         comm_ = <ncclComm_t*>self.comm
- * 
- *         cdef ncclResult_t result = ncclCommUserRank(deref(comm_), rank)             # <<<<<<<<<<<<<<
- * 
- *         if result != ncclSuccess:
- */
-  __pyx_v_result = ncclCommUserRank((*__pyx_v_comm_), __pyx_v_rank);
-
   /* "nccl-example/simple_reduce.pyx":204
- *         cdef ncclResult_t result = ncclCommUserRank(deref(comm_), rank)
+ *         cdef ncclResult_t result = ncclCommCuDevice(deref(comm_), dev)
  * 
  *         if result != ncclSuccess:             # <<<<<<<<<<<<<<
  *             err_str = ncclGetErrorString(result)
@@ -2682,7 +2814,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_12user_rank(struct __pyx_obj_12nc
  *             err_str = ncclGetErrorString(result)
  *             print("NCCL_ERROR: %s" % err_str)             # <<<<<<<<<<<<<<
  * 
- *         ret = rank[0]
+ *         ret = dev[0]
  */
     __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_err_str); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 206, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
@@ -2695,7 +2827,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_12user_rank(struct __pyx_obj_12nc
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
     /* "nccl-example/simple_reduce.pyx":204
- *         cdef ncclResult_t result = ncclCommUserRank(deref(comm_), rank)
+ *         cdef ncclResult_t result = ncclCommCuDevice(deref(comm_), dev)
  * 
  *         if result != ncclSuccess:             # <<<<<<<<<<<<<<
  *             err_str = ncclGetErrorString(result)
@@ -2706,27 +2838,27 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_12user_rank(struct __pyx_obj_12nc
   /* "nccl-example/simple_reduce.pyx":208
  *             print("NCCL_ERROR: %s" % err_str)
  * 
- *         ret = rank[0]             # <<<<<<<<<<<<<<
- *         free(rank)
+ *         ret = dev[0]             # <<<<<<<<<<<<<<
+ *         free(dev)
  *         return ret
  */
-  __pyx_v_ret = (__pyx_v_rank[0]);
+  __pyx_v_ret = (__pyx_v_dev[0]);
 
   /* "nccl-example/simple_reduce.pyx":209
  * 
- *         ret = rank[0]
- *         free(rank)             # <<<<<<<<<<<<<<
+ *         ret = dev[0]
+ *         free(dev)             # <<<<<<<<<<<<<<
  *         return ret
  * 
  */
-  free(__pyx_v_rank);
+  free(__pyx_v_dev);
 
   /* "nccl-example/simple_reduce.pyx":210
- *         ret = rank[0]
- *         free(rank)
+ *         ret = dev[0]
+ *         free(dev)
  *         return ret             # <<<<<<<<<<<<<<
  * 
- *     def get_comm(self):
+ *     def user_rank(self):
  */
   __Pyx_XDECREF(__pyx_r);
   __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_ret); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 210, __pyx_L1_error)
@@ -2735,7 +2867,166 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_12user_rank(struct __pyx_obj_12nc
   __pyx_t_2 = 0;
   goto __pyx_L0;
 
-  /* "nccl-example/simple_reduce.pyx":196
+  /* "nccl-example/simple_reduce.pyx":198
+ * 
+ * 
+ *     def cu_device(self):             # <<<<<<<<<<<<<<
+ *         cdef int *dev = <int*>malloc(sizeof(int))
+ * 
+ */
+
+  /* function exit code */
+  __pyx_L1_error:;
+  __Pyx_XDECREF(__pyx_t_2);
+  __Pyx_XDECREF(__pyx_t_3);
+  __Pyx_AddTraceback("nccl_example.nccl.cu_device", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __pyx_r = NULL;
+  __pyx_L0:;
+  __Pyx_XGIVEREF(__pyx_r);
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+/* "nccl-example/simple_reduce.pyx":212
+ *         return ret
+ * 
+ *     def user_rank(self):             # <<<<<<<<<<<<<<
+ * 
+ *         cdef int *rank = <int*>malloc(sizeof(int))
+ */
+
+/* Python wrapper */
+static PyObject *__pyx_pw_12nccl_example_4nccl_15user_rank(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_12nccl_example_4nccl_14user_rank[] = "nccl.user_rank(self)";
+static PyObject *__pyx_pw_12nccl_example_4nccl_15user_rank(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+  PyObject *__pyx_r = 0;
+  __Pyx_RefNannyDeclarations
+  __Pyx_RefNannySetupContext("user_rank (wrapper)", 0);
+  __pyx_r = __pyx_pf_12nccl_example_4nccl_14user_rank(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
+
+  /* function exit code */
+  __Pyx_RefNannyFinishContext();
+  return __pyx_r;
+}
+
+static PyObject *__pyx_pf_12nccl_example_4nccl_14user_rank(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
+  int *__pyx_v_rank;
+  ncclComm_t *__pyx_v_comm_;
+  ncclResult_t __pyx_v_result;
+  char const *__pyx_v_err_str;
+  int __pyx_v_ret;
+  PyObject *__pyx_r = NULL;
+  __Pyx_RefNannyDeclarations
+  int __pyx_t_1;
+  PyObject *__pyx_t_2 = NULL;
+  PyObject *__pyx_t_3 = NULL;
+  __Pyx_RefNannySetupContext("user_rank", 0);
+
+  /* "nccl-example/simple_reduce.pyx":214
+ *     def user_rank(self):
+ * 
+ *         cdef int *rank = <int*>malloc(sizeof(int))             # <<<<<<<<<<<<<<
+ * 
+ *         comm_ = <ncclComm_t*>self.comm
+ */
+  __pyx_v_rank = ((int *)malloc((sizeof(int))));
+
+  /* "nccl-example/simple_reduce.pyx":216
+ *         cdef int *rank = <int*>malloc(sizeof(int))
+ * 
+ *         comm_ = <ncclComm_t*>self.comm             # <<<<<<<<<<<<<<
+ * 
+ *         cdef ncclResult_t result = ncclCommUserRank(deref(comm_), rank)
+ */
+  __pyx_v_comm_ = ((ncclComm_t *)__pyx_v_self->comm);
+
+  /* "nccl-example/simple_reduce.pyx":218
+ *         comm_ = <ncclComm_t*>self.comm
+ * 
+ *         cdef ncclResult_t result = ncclCommUserRank(deref(comm_), rank)             # <<<<<<<<<<<<<<
+ * 
+ *         if result != ncclSuccess:
+ */
+  __pyx_v_result = ncclCommUserRank((*__pyx_v_comm_), __pyx_v_rank);
+
+  /* "nccl-example/simple_reduce.pyx":220
+ *         cdef ncclResult_t result = ncclCommUserRank(deref(comm_), rank)
+ * 
+ *         if result != ncclSuccess:             # <<<<<<<<<<<<<<
+ *             err_str = ncclGetErrorString(result)
+ *             print("NCCL_ERROR: %s" % err_str)
+ */
+  __pyx_t_1 = ((__pyx_v_result != ncclSuccess) != 0);
+  if (__pyx_t_1) {
+
+    /* "nccl-example/simple_reduce.pyx":221
+ * 
+ *         if result != ncclSuccess:
+ *             err_str = ncclGetErrorString(result)             # <<<<<<<<<<<<<<
+ *             print("NCCL_ERROR: %s" % err_str)
+ * 
+ */
+    __pyx_v_err_str = ncclGetErrorString(__pyx_v_result);
+
+    /* "nccl-example/simple_reduce.pyx":222
+ *         if result != ncclSuccess:
+ *             err_str = ncclGetErrorString(result)
+ *             print("NCCL_ERROR: %s" % err_str)             # <<<<<<<<<<<<<<
+ * 
+ *         ret = rank[0]
+ */
+    __pyx_t_2 = __Pyx_PyBytes_FromString(__pyx_v_err_str); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __pyx_t_3 = PyUnicode_Format(__pyx_kp_u_NCCL_ERROR_s, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 222, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_3);
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+    __pyx_t_2 = __Pyx_PyObject_CallOneArg(__pyx_builtin_print, __pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 222, __pyx_L1_error)
+    __Pyx_GOTREF(__pyx_t_2);
+    __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
+    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
+
+    /* "nccl-example/simple_reduce.pyx":220
+ *         cdef ncclResult_t result = ncclCommUserRank(deref(comm_), rank)
+ * 
+ *         if result != ncclSuccess:             # <<<<<<<<<<<<<<
+ *             err_str = ncclGetErrorString(result)
+ *             print("NCCL_ERROR: %s" % err_str)
+ */
+  }
+
+  /* "nccl-example/simple_reduce.pyx":224
+ *             print("NCCL_ERROR: %s" % err_str)
+ * 
+ *         ret = rank[0]             # <<<<<<<<<<<<<<
+ *         free(rank)
+ *         return ret
+ */
+  __pyx_v_ret = (__pyx_v_rank[0]);
+
+  /* "nccl-example/simple_reduce.pyx":225
+ * 
+ *         ret = rank[0]
+ *         free(rank)             # <<<<<<<<<<<<<<
+ *         return ret
+ * 
+ */
+  free(__pyx_v_rank);
+
+  /* "nccl-example/simple_reduce.pyx":226
+ *         ret = rank[0]
+ *         free(rank)
+ *         return ret             # <<<<<<<<<<<<<<
+ * 
+ *     def get_comm(self):
+ */
+  __Pyx_XDECREF(__pyx_r);
+  __pyx_t_2 = __Pyx_PyInt_From_int(__pyx_v_ret); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 226, __pyx_L1_error)
+  __Pyx_GOTREF(__pyx_t_2);
+  __pyx_r = __pyx_t_2;
+  __pyx_t_2 = 0;
+  goto __pyx_L0;
+
+  /* "nccl-example/simple_reduce.pyx":212
  *         return ret
  * 
  *     def user_rank(self):             # <<<<<<<<<<<<<<
@@ -2755,7 +3046,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_12user_rank(struct __pyx_obj_12nc
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":212
+/* "nccl-example/simple_reduce.pyx":228
  *         return ret
  * 
  *     def get_comm(self):             # <<<<<<<<<<<<<<
@@ -2764,26 +3055,26 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_12user_rank(struct __pyx_obj_12nc
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_4nccl_15get_comm(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_12nccl_example_4nccl_14get_comm[] = "nccl.get_comm(self)";
-static PyObject *__pyx_pw_12nccl_example_4nccl_15get_comm(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_12nccl_example_4nccl_17get_comm(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_12nccl_example_4nccl_16get_comm[] = "nccl.get_comm(self)";
+static PyObject *__pyx_pw_12nccl_example_4nccl_17get_comm(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("get_comm (wrapper)", 0);
-  __pyx_r = __pyx_pf_12nccl_example_4nccl_14get_comm(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
+  __pyx_r = __pyx_pf_12nccl_example_4nccl_16get_comm(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_4nccl_14get_comm(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
+static PyObject *__pyx_pf_12nccl_example_4nccl_16get_comm(struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("get_comm", 0);
 
-  /* "nccl-example/simple_reduce.pyx":213
+  /* "nccl-example/simple_reduce.pyx":229
  * 
  *     def get_comm(self):
  *         return <size_t>self.comm             # <<<<<<<<<<<<<<
@@ -2791,13 +3082,13 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_14get_comm(struct __pyx_obj_12ncc
  * cdef class SimpleReduce:
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_self->comm)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 213, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_FromSize_t(((size_t)__pyx_v_self->comm)); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 229, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "nccl-example/simple_reduce.pyx":212
+  /* "nccl-example/simple_reduce.pyx":228
  *         return ret
  * 
  *     def get_comm(self):             # <<<<<<<<<<<<<<
@@ -2823,20 +3114,20 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_14get_comm(struct __pyx_obj_12ncc
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_4nccl_17__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
-static char __pyx_doc_12nccl_example_4nccl_16__reduce_cython__[] = "nccl.__reduce_cython__(self)";
-static PyObject *__pyx_pw_12nccl_example_4nccl_17__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
+static PyObject *__pyx_pw_12nccl_example_4nccl_19__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused); /*proto*/
+static char __pyx_doc_12nccl_example_4nccl_18__reduce_cython__[] = "nccl.__reduce_cython__(self)";
+static PyObject *__pyx_pw_12nccl_example_4nccl_19__reduce_cython__(PyObject *__pyx_v_self, CYTHON_UNUSED PyObject *unused) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__reduce_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_12nccl_example_4nccl_16__reduce_cython__(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
+  __pyx_r = __pyx_pf_12nccl_example_4nccl_18__reduce_cython__(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_4nccl_16__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
+static PyObject *__pyx_pf_12nccl_example_4nccl_18__reduce_cython__(CYTHON_UNUSED struct __pyx_obj_12nccl_example_nccl *__pyx_v_self) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2878,20 +3169,20 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_16__reduce_cython__(CYTHON_UNUSED
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_4nccl_19__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
-static char __pyx_doc_12nccl_example_4nccl_18__setstate_cython__[] = "nccl.__setstate_cython__(self, __pyx_state)";
-static PyObject *__pyx_pw_12nccl_example_4nccl_19__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pw_12nccl_example_4nccl_21__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state); /*proto*/
+static char __pyx_doc_12nccl_example_4nccl_20__setstate_cython__[] = "nccl.__setstate_cython__(self, __pyx_state)";
+static PyObject *__pyx_pw_12nccl_example_4nccl_21__setstate_cython__(PyObject *__pyx_v_self, PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__setstate_cython__ (wrapper)", 0);
-  __pyx_r = __pyx_pf_12nccl_example_4nccl_18__setstate_cython__(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
+  __pyx_r = __pyx_pf_12nccl_example_4nccl_20__setstate_cython__(((struct __pyx_obj_12nccl_example_nccl *)__pyx_v_self), ((PyObject *)__pyx_v___pyx_state));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_4nccl_18__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_12nccl_example_nccl *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
+static PyObject *__pyx_pf_12nccl_example_4nccl_20__setstate_cython__(CYTHON_UNUSED struct __pyx_obj_12nccl_example_nccl *__pyx_v_self, CYTHON_UNUSED PyObject *__pyx_v___pyx_state) {
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   PyObject *__pyx_t_1 = NULL;
@@ -2925,7 +3216,7 @@ static PyObject *__pyx_pf_12nccl_example_4nccl_18__setstate_cython__(CYTHON_UNUS
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":224
+/* "nccl-example/simple_reduce.pyx":240
  *     cdef object model_params
  * 
  *     def __cinit__(self, workerId, nWorkers, cuml_comm = None):             # <<<<<<<<<<<<<<
@@ -2968,7 +3259,7 @@ static int __pyx_pw_12nccl_example_12SimpleReduce_1__cinit__(PyObject *__pyx_v_s
         case  1:
         if (likely((values[1] = __Pyx_PyDict_GetItemStr(__pyx_kwds, __pyx_n_s_nWorkers)) != 0)) kw_args--;
         else {
-          __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 2, 3, 1); __PYX_ERR(0, 224, __pyx_L3_error)
+          __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 2, 3, 1); __PYX_ERR(0, 240, __pyx_L3_error)
         }
         CYTHON_FALLTHROUGH;
         case  2:
@@ -2978,7 +3269,7 @@ static int __pyx_pw_12nccl_example_12SimpleReduce_1__cinit__(PyObject *__pyx_v_s
         }
       }
       if (unlikely(kw_args > 0)) {
-        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 224, __pyx_L3_error)
+        if (unlikely(__Pyx_ParseOptionalKeywords(__pyx_kwds, __pyx_pyargnames, 0, values, pos_args, "__cinit__") < 0)) __PYX_ERR(0, 240, __pyx_L3_error)
       }
     } else {
       switch (PyTuple_GET_SIZE(__pyx_args)) {
@@ -2996,7 +3287,7 @@ static int __pyx_pw_12nccl_example_12SimpleReduce_1__cinit__(PyObject *__pyx_v_s
   }
   goto __pyx_L4_argument_unpacking_done;
   __pyx_L5_argtuple_error:;
-  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 224, __pyx_L3_error)
+  __Pyx_RaiseArgtupleInvalid("__cinit__", 0, 2, 3, PyTuple_GET_SIZE(__pyx_args)); __PYX_ERR(0, 240, __pyx_L3_error)
   __pyx_L3_error:;
   __Pyx_AddTraceback("nccl_example.SimpleReduce.__cinit__", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __Pyx_RefNannyFinishContext();
@@ -3020,27 +3311,27 @@ static int __pyx_pf_12nccl_example_12SimpleReduce___cinit__(struct __pyx_obj_12n
   size_t __pyx_t_4;
   __Pyx_RefNannySetupContext("__cinit__", 0);
 
-  /* "nccl-example/simple_reduce.pyx":225
+  /* "nccl-example/simple_reduce.pyx":241
  * 
  *     def __cinit__(self, workerId, nWorkers, cuml_comm = None):
  *         self.workerId = workerId             # <<<<<<<<<<<<<<
  *         self.nWorkers = nWorkers
  * 
  */
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_workerId); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 225, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_workerId); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 241, __pyx_L1_error)
   __pyx_v_self->workerId = __pyx_t_1;
 
-  /* "nccl-example/simple_reduce.pyx":226
+  /* "nccl-example/simple_reduce.pyx":242
  *     def __cinit__(self, workerId, nWorkers, cuml_comm = None):
  *         self.workerId = workerId
  *         self.nWorkers = nWorkers             # <<<<<<<<<<<<<<
  * 
  *         cdef size_t temp_comm
  */
-  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_nWorkers); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 226, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_nWorkers); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 242, __pyx_L1_error)
   __pyx_v_self->nWorkers = __pyx_t_1;
 
-  /* "nccl-example/simple_reduce.pyx":229
+  /* "nccl-example/simple_reduce.pyx":245
  * 
  *         cdef size_t temp_comm
  *         if cuml_comm is not None:             # <<<<<<<<<<<<<<
@@ -3051,17 +3342,17 @@ static int __pyx_pf_12nccl_example_12SimpleReduce___cinit__(struct __pyx_obj_12n
   __pyx_t_3 = (__pyx_t_2 != 0);
   if (__pyx_t_3) {
 
-    /* "nccl-example/simple_reduce.pyx":230
+    /* "nccl-example/simple_reduce.pyx":246
  *         cdef size_t temp_comm
  *         if cuml_comm is not None:
  *             temp_comm = <size_t>cuml_comm             # <<<<<<<<<<<<<<
  *             comm_ = <ncclComm_t*>temp_comm
  * 
  */
-    __pyx_t_4 = __Pyx_PyInt_As_size_t(__pyx_v_cuml_comm); if (unlikely((__pyx_t_4 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 230, __pyx_L1_error)
+    __pyx_t_4 = __Pyx_PyInt_As_size_t(__pyx_v_cuml_comm); if (unlikely((__pyx_t_4 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 246, __pyx_L1_error)
     __pyx_v_temp_comm = ((size_t)__pyx_t_4);
 
-    /* "nccl-example/simple_reduce.pyx":231
+    /* "nccl-example/simple_reduce.pyx":247
  *         if cuml_comm is not None:
  *             temp_comm = <size_t>cuml_comm
  *             comm_ = <ncclComm_t*>temp_comm             # <<<<<<<<<<<<<<
@@ -3070,7 +3361,7 @@ static int __pyx_pf_12nccl_example_12SimpleReduce___cinit__(struct __pyx_obj_12n
  */
     __pyx_v_comm_ = ((ncclComm_t *)__pyx_v_temp_comm);
 
-    /* "nccl-example/simple_reduce.pyx":233
+    /* "nccl-example/simple_reduce.pyx":249
  *             comm_ = <ncclComm_t*>temp_comm
  * 
  *             self.cumlComm = build_comm(deref(comm_), NULL, NULL, self.workerId, self.nWorkers)             # <<<<<<<<<<<<<<
@@ -3079,7 +3370,7 @@ static int __pyx_pf_12nccl_example_12SimpleReduce___cinit__(struct __pyx_obj_12n
  */
     __pyx_v_self->cumlComm = NCCLExample::build_comm((*__pyx_v_comm_), NULL, NULL, __pyx_v_self->workerId, __pyx_v_self->nWorkers);
 
-    /* "nccl-example/simple_reduce.pyx":229
+    /* "nccl-example/simple_reduce.pyx":245
  * 
  *         cdef size_t temp_comm
  *         if cuml_comm is not None:             # <<<<<<<<<<<<<<
@@ -3089,7 +3380,7 @@ static int __pyx_pf_12nccl_example_12SimpleReduce___cinit__(struct __pyx_obj_12n
     goto __pyx_L3;
   }
 
-  /* "nccl-example/simple_reduce.pyx":235
+  /* "nccl-example/simple_reduce.pyx":251
  *             self.cumlComm = build_comm(deref(comm_), NULL, NULL, self.workerId, self.nWorkers)
  *         else:
  *             self.cumlComm = NULL             # <<<<<<<<<<<<<<
@@ -3101,7 +3392,7 @@ static int __pyx_pf_12nccl_example_12SimpleReduce___cinit__(struct __pyx_obj_12n
   }
   __pyx_L3:;
 
-  /* "nccl-example/simple_reduce.pyx":224
+  /* "nccl-example/simple_reduce.pyx":240
  *     cdef object model_params
  * 
  *     def __cinit__(self, workerId, nWorkers, cuml_comm = None):             # <<<<<<<<<<<<<<
@@ -3120,7 +3411,7 @@ static int __pyx_pf_12nccl_example_12SimpleReduce___cinit__(struct __pyx_obj_12n
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":238
+/* "nccl-example/simple_reduce.pyx":254
  * 
  * 
  *     def get_clique_size(self):             # <<<<<<<<<<<<<<
@@ -3149,7 +3440,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_2get_clique_size(struct 
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("get_clique_size", 0);
 
-  /* "nccl-example/simple_reduce.pyx":242
+  /* "nccl-example/simple_reduce.pyx":258
  *         Simple test that cumlCommunicator is working properly
  *         """
  *         if self.cumlComm == NULL:             # <<<<<<<<<<<<<<
@@ -3159,18 +3450,18 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_2get_clique_size(struct 
   __pyx_t_1 = ((__pyx_v_self->cumlComm == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "nccl-example/simple_reduce.pyx":243
+    /* "nccl-example/simple_reduce.pyx":259
  *         """
  *         if self.cumlComm == NULL:
  *             print("Must initialize before getting size")             # <<<<<<<<<<<<<<
  *         else:
  *             return get_clique_size(self.cumlComm)
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 243, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 259, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "nccl-example/simple_reduce.pyx":242
+    /* "nccl-example/simple_reduce.pyx":258
  *         Simple test that cumlCommunicator is working properly
  *         """
  *         if self.cumlComm == NULL:             # <<<<<<<<<<<<<<
@@ -3180,7 +3471,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_2get_clique_size(struct 
     goto __pyx_L3;
   }
 
-  /* "nccl-example/simple_reduce.pyx":245
+  /* "nccl-example/simple_reduce.pyx":261
  *             print("Must initialize before getting size")
  *         else:
  *             return get_clique_size(self.cumlComm)             # <<<<<<<<<<<<<<
@@ -3189,7 +3480,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_2get_clique_size(struct 
  */
   /*else*/ {
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_2 = __Pyx_PyInt_From_int(NCCLExample::get_clique_size(__pyx_v_self->cumlComm)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 245, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_int(NCCLExample::get_clique_size(__pyx_v_self->cumlComm)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_r = __pyx_t_2;
     __pyx_t_2 = 0;
@@ -3197,7 +3488,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_2get_clique_size(struct 
   }
   __pyx_L3:;
 
-  /* "nccl-example/simple_reduce.pyx":238
+  /* "nccl-example/simple_reduce.pyx":254
  * 
  * 
  *     def get_clique_size(self):             # <<<<<<<<<<<<<<
@@ -3218,7 +3509,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_2get_clique_size(struct 
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":247
+/* "nccl-example/simple_reduce.pyx":263
  *             return get_clique_size(self.cumlComm)
  * 
  *     def get_rank(self):             # <<<<<<<<<<<<<<
@@ -3247,7 +3538,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_4get_rank(struct __pyx_o
   PyObject *__pyx_t_2 = NULL;
   __Pyx_RefNannySetupContext("get_rank", 0);
 
-  /* "nccl-example/simple_reduce.pyx":251
+  /* "nccl-example/simple_reduce.pyx":267
  *         Simple test that cumlCommunicator is working properly
  *         """
  *         if self.cumlComm == NULL:             # <<<<<<<<<<<<<<
@@ -3257,18 +3548,18 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_4get_rank(struct __pyx_o
   __pyx_t_1 = ((__pyx_v_self->cumlComm == NULL) != 0);
   if (__pyx_t_1) {
 
-    /* "nccl-example/simple_reduce.pyx":252
+    /* "nccl-example/simple_reduce.pyx":268
  *         """
  *         if self.cumlComm == NULL:
  *             print("Must initialize before getting size")             # <<<<<<<<<<<<<<
  *         else:
  *             return get_rank(self.cumlComm)
  */
-    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 252, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_Call(__pyx_builtin_print, __pyx_tuple__3, NULL); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 268, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "nccl-example/simple_reduce.pyx":251
+    /* "nccl-example/simple_reduce.pyx":267
  *         Simple test that cumlCommunicator is working properly
  *         """
  *         if self.cumlComm == NULL:             # <<<<<<<<<<<<<<
@@ -3278,7 +3569,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_4get_rank(struct __pyx_o
     goto __pyx_L3;
   }
 
-  /* "nccl-example/simple_reduce.pyx":254
+  /* "nccl-example/simple_reduce.pyx":270
  *             print("Must initialize before getting size")
  *         else:
  *             return get_rank(self.cumlComm)             # <<<<<<<<<<<<<<
@@ -3287,7 +3578,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_4get_rank(struct __pyx_o
  */
   /*else*/ {
     __Pyx_XDECREF(__pyx_r);
-    __pyx_t_2 = __Pyx_PyInt_From_int(NCCLExample::get_rank(__pyx_v_self->cumlComm)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 254, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyInt_From_int(NCCLExample::get_rank(__pyx_v_self->cumlComm)); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 270, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __pyx_r = __pyx_t_2;
     __pyx_t_2 = 0;
@@ -3295,7 +3586,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_4get_rank(struct __pyx_o
   }
   __pyx_L3:;
 
-  /* "nccl-example/simple_reduce.pyx":247
+  /* "nccl-example/simple_reduce.pyx":263
  *             return get_clique_size(self.cumlComm)
  * 
  *     def get_rank(self):             # <<<<<<<<<<<<<<
@@ -3316,7 +3607,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_4get_rank(struct __pyx_o
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":256
+/* "nccl-example/simple_reduce.pyx":272
  *             return get_rank(self.cumlComm)
  * 
  *     def fit(self, df):             # <<<<<<<<<<<<<<
@@ -3363,14 +3654,14 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
   PyObject *(*__pyx_t_12)(PyObject *);
   __Pyx_RefNannySetupContext("fit", 0);
 
-  /* "nccl-example/simple_reduce.pyx":260
+  /* "nccl-example/simple_reduce.pyx":276
  *         Mimics an MNMG fit() function on a model that uses collective comms
  *         """
  *         cdef object X_m = df.as_gpu_matrix()             # <<<<<<<<<<<<<<
  *         cdef uintptr_t X_ctype = X_m.device_ctypes_pointer.value
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_df, __pyx_n_s_as_gpu_matrix); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 260, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_df, __pyx_n_s_as_gpu_matrix); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __pyx_t_3 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_2))) {
@@ -3384,29 +3675,29 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
   }
   __pyx_t_1 = (__pyx_t_3) ? __Pyx_PyObject_CallOneArg(__pyx_t_2, __pyx_t_3) : __Pyx_PyObject_CallNoArg(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 260, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 276, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_X_m = __pyx_t_1;
   __pyx_t_1 = 0;
 
-  /* "nccl-example/simple_reduce.pyx":261
+  /* "nccl-example/simple_reduce.pyx":277
  *         """
  *         cdef object X_m = df.as_gpu_matrix()
  *         cdef uintptr_t X_ctype = X_m.device_ctypes_pointer.value             # <<<<<<<<<<<<<<
  * 
  *         if get_rank(self.cumlComm) == 0:
  */
-  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_X_m, __pyx_n_s_device_ctypes_pointer); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 261, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_v_X_m, __pyx_n_s_device_ctypes_pointer); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 277, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 261, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 277, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-  __pyx_t_4 = __Pyx_PyInt_As_size_t(__pyx_t_2); if (unlikely((__pyx_t_4 == ((uintptr_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 261, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_As_size_t(__pyx_t_2); if (unlikely((__pyx_t_4 == ((uintptr_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 277, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_X_ctype = __pyx_t_4;
 
-  /* "nccl-example/simple_reduce.pyx":263
+  /* "nccl-example/simple_reduce.pyx":279
  *         cdef uintptr_t X_ctype = X_m.device_ctypes_pointer.value
  * 
  *         if get_rank(self.cumlComm) == 0:             # <<<<<<<<<<<<<<
@@ -3416,37 +3707,37 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
   __pyx_t_5 = ((NCCLExample::get_rank(__pyx_v_self->cumlComm) == 0) != 0);
   if (__pyx_t_5) {
 
-    /* "nccl-example/simple_reduce.pyx":264
+    /* "nccl-example/simple_reduce.pyx":280
  * 
  *         if get_rank(self.cumlComm) == 0:
  *             out_gpu_mat = numba.cuda.to_device(np.zeros((df.shape[0], df.shape[1]),             # <<<<<<<<<<<<<<
  *                                                         dtype=np.float32, order="F"))
  *             out_df = cudf.DataFrame(index=cudf.dataframe.RangeIndex(0, df.shape[0]))
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numba); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_numba); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_cuda); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_cuda); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_to_device); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_to_device); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_np); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_zeros); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_df, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_df, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_3, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_7 = __Pyx_GetItemInt(__pyx_t_3, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_df, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_df, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_8 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_GIVEREF(__pyx_t_7);
     PyTuple_SET_ITEM(__pyx_t_3, 0, __pyx_t_7);
@@ -3454,38 +3745,38 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
     PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_t_8);
     __pyx_t_7 = 0;
     __pyx_t_8 = 0;
-    __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_8 = PyTuple_New(1); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_8, 0, __pyx_t_3);
     __pyx_t_3 = 0;
 
-    /* "nccl-example/simple_reduce.pyx":265
+    /* "nccl-example/simple_reduce.pyx":281
  *         if get_rank(self.cumlComm) == 0:
  *             out_gpu_mat = numba.cuda.to_device(np.zeros((df.shape[0], df.shape[1]),
  *                                                         dtype=np.float32, order="F"))             # <<<<<<<<<<<<<<
  *             out_df = cudf.DataFrame(index=cudf.dataframe.RangeIndex(0, df.shape[0]))
  *         else:
  */
-    __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 265, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyDict_NewPresized(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 281, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 265, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_7, __pyx_n_s_np); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 281, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_7);
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_float32); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 265, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_7, __pyx_n_s_float32); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 281, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
-    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_9) < 0) __PYX_ERR(0, 265, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_dtype, __pyx_t_9) < 0) __PYX_ERR(0, 281, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_order, __pyx_n_u_F) < 0) __PYX_ERR(0, 265, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_3, __pyx_n_s_order, __pyx_n_u_F) < 0) __PYX_ERR(0, 281, __pyx_L1_error)
 
-    /* "nccl-example/simple_reduce.pyx":264
+    /* "nccl-example/simple_reduce.pyx":280
  * 
  *         if get_rank(self.cumlComm) == 0:
  *             out_gpu_mat = numba.cuda.to_device(np.zeros((df.shape[0], df.shape[1]),             # <<<<<<<<<<<<<<
  *                                                         dtype=np.float32, order="F"))
  *             out_df = cudf.DataFrame(index=cudf.dataframe.RangeIndex(0, df.shape[0]))
  */
-    __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_8, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 264, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_6, __pyx_t_8, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
@@ -3503,37 +3794,37 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
     __pyx_t_2 = (__pyx_t_3) ? __Pyx_PyObject_Call2Args(__pyx_t_1, __pyx_t_3, __pyx_t_9) : __Pyx_PyObject_CallOneArg(__pyx_t_1, __pyx_t_9);
     __Pyx_XDECREF(__pyx_t_3); __pyx_t_3 = 0;
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 264, __pyx_L1_error)
+    if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 280, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __pyx_v_out_gpu_mat = __pyx_t_2;
     __pyx_t_2 = 0;
 
-    /* "nccl-example/simple_reduce.pyx":266
+    /* "nccl-example/simple_reduce.pyx":282
  *             out_gpu_mat = numba.cuda.to_device(np.zeros((df.shape[0], df.shape[1]),
  *                                                         dtype=np.float32, order="F"))
  *             out_df = cudf.DataFrame(index=cudf.dataframe.RangeIndex(0, df.shape[0]))             # <<<<<<<<<<<<<<
  *         else:
  *             out_gpu_mat = numba.cuda.device_array((1, 1), dtype=np.float32)
  */
-    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_cudf); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 266, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_2, __pyx_n_s_cudf); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_DataFrame); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 266, __pyx_L1_error)
+    __pyx_t_1 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_DataFrame); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 266, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_cudf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 266, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_3, __pyx_n_s_cudf); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_dataframe); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 266, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_dataframe); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_RangeIndex); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 266, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_8, __pyx_n_s_RangeIndex); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
-    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_df, __pyx_n_s_shape); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 266, __pyx_L1_error)
+    __pyx_t_8 = __Pyx_PyObject_GetAttrStr(__pyx_v_df, __pyx_n_s_shape); if (unlikely(!__pyx_t_8)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_8);
-    __pyx_t_6 = __Pyx_GetItemInt(__pyx_t_8, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 266, __pyx_L1_error)
+    __pyx_t_6 = __Pyx_GetItemInt(__pyx_t_8, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_6)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_6);
     __Pyx_DECREF(__pyx_t_8); __pyx_t_8 = 0;
     __pyx_t_8 = NULL;
@@ -3551,7 +3842,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
     #if CYTHON_FAST_PYCALL
     if (PyFunction_Check(__pyx_t_3)) {
       PyObject *__pyx_temp[3] = {__pyx_t_8, __pyx_int_0, __pyx_t_6};
-      __pyx_t_9 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 266, __pyx_L1_error)
+      __pyx_t_9 = __Pyx_PyFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 282, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
       __Pyx_GOTREF(__pyx_t_9);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
@@ -3560,14 +3851,14 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
     #if CYTHON_FAST_PYCCALL
     if (__Pyx_PyFastCFunction_Check(__pyx_t_3)) {
       PyObject *__pyx_temp[3] = {__pyx_t_8, __pyx_int_0, __pyx_t_6};
-      __pyx_t_9 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 266, __pyx_L1_error)
+      __pyx_t_9 = __Pyx_PyCFunction_FastCall(__pyx_t_3, __pyx_temp+1-__pyx_t_10, 2+__pyx_t_10); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 282, __pyx_L1_error)
       __Pyx_XDECREF(__pyx_t_8); __pyx_t_8 = 0;
       __Pyx_GOTREF(__pyx_t_9);
       __Pyx_DECREF(__pyx_t_6); __pyx_t_6 = 0;
     } else
     #endif
     {
-      __pyx_t_7 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 266, __pyx_L1_error)
+      __pyx_t_7 = PyTuple_New(2+__pyx_t_10); if (unlikely(!__pyx_t_7)) __PYX_ERR(0, 282, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_7);
       if (__pyx_t_8) {
         __Pyx_GIVEREF(__pyx_t_8); PyTuple_SET_ITEM(__pyx_t_7, 0, __pyx_t_8); __pyx_t_8 = NULL;
@@ -3578,21 +3869,21 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
       __Pyx_GIVEREF(__pyx_t_6);
       PyTuple_SET_ITEM(__pyx_t_7, 1+__pyx_t_10, __pyx_t_6);
       __pyx_t_6 = 0;
-      __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_7, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 266, __pyx_L1_error)
+      __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_7, NULL); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 282, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_9);
       __Pyx_DECREF(__pyx_t_7); __pyx_t_7 = 0;
     }
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_index, __pyx_t_9) < 0) __PYX_ERR(0, 266, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_index, __pyx_t_9) < 0) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 266, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_Call(__pyx_t_1, __pyx_empty_tuple, __pyx_t_2); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 282, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_out_df = __pyx_t_9;
     __pyx_t_9 = 0;
 
-    /* "nccl-example/simple_reduce.pyx":263
+    /* "nccl-example/simple_reduce.pyx":279
  *         cdef uintptr_t X_ctype = X_m.device_ctypes_pointer.value
  * 
  *         if get_rank(self.cumlComm) == 0:             # <<<<<<<<<<<<<<
@@ -3602,7 +3893,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
     goto __pyx_L3;
   }
 
-  /* "nccl-example/simple_reduce.pyx":268
+  /* "nccl-example/simple_reduce.pyx":284
  *             out_df = cudf.DataFrame(index=cudf.dataframe.RangeIndex(0, df.shape[0]))
  *         else:
  *             out_gpu_mat = numba.cuda.device_array((1, 1), dtype=np.float32)             # <<<<<<<<<<<<<<
@@ -3610,31 +3901,31 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
  * 
  */
   /*else*/ {
-    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_numba); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 268, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_9, __pyx_n_s_numba); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 284, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_cuda); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 268, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_9, __pyx_n_s_cuda); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 284, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
-    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_device_array); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 268, __pyx_L1_error)
+    __pyx_t_9 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_device_array); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 284, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_9);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 268, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyDict_NewPresized(1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 284, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 268, __pyx_L1_error)
+    __Pyx_GetModuleGlobalName(__pyx_t_1, __pyx_n_s_np); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 284, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_1);
-    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_float32); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 268, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_1, __pyx_n_s_float32); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 284, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
-    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_3) < 0) __PYX_ERR(0, 268, __pyx_L1_error)
+    if (PyDict_SetItem(__pyx_t_2, __pyx_n_s_dtype, __pyx_t_3) < 0) __PYX_ERR(0, 284, __pyx_L1_error)
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_tuple__5, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 268, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_t_9, __pyx_tuple__5, __pyx_t_2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 284, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     __pyx_v_out_gpu_mat = __pyx_t_3;
     __pyx_t_3 = 0;
 
-    /* "nccl-example/simple_reduce.pyx":269
+    /* "nccl-example/simple_reduce.pyx":285
  *         else:
  *             out_gpu_mat = numba.cuda.device_array((1, 1), dtype=np.float32)
  *             out_df = None             # <<<<<<<<<<<<<<
@@ -3646,55 +3937,55 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
   }
   __pyx_L3:;
 
-  /* "nccl-example/simple_reduce.pyx":271
+  /* "nccl-example/simple_reduce.pyx":287
  *             out_df = None
  * 
  *         cdef uintptr_t out_ctype = out_gpu_mat.device_ctypes_pointer.value             # <<<<<<<<<<<<<<
  * 
  *         cdef int m = X_m.shape[0]
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_out_gpu_mat, __pyx_n_s_device_ctypes_pointer); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 271, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_out_gpu_mat, __pyx_n_s_device_ctypes_pointer); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 287, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 271, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_t_3, __pyx_n_s_value); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 287, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_4 = __Pyx_PyInt_As_size_t(__pyx_t_2); if (unlikely((__pyx_t_4 == ((uintptr_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 271, __pyx_L1_error)
+  __pyx_t_4 = __Pyx_PyInt_As_size_t(__pyx_t_2); if (unlikely((__pyx_t_4 == ((uintptr_t)-1)) && PyErr_Occurred())) __PYX_ERR(0, 287, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_out_ctype = __pyx_t_4;
 
-  /* "nccl-example/simple_reduce.pyx":273
+  /* "nccl-example/simple_reduce.pyx":289
  *         cdef uintptr_t out_ctype = out_gpu_mat.device_ctypes_pointer.value
  * 
  *         cdef int m = X_m.shape[0]             # <<<<<<<<<<<<<<
  *         cdef int n = X_m.shape[1]
  * 
  */
-  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_X_m, __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_X_m, __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 289, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_2, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_2, 0, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 289, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 273, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_3); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 289, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_v_m = __pyx_t_10;
 
-  /* "nccl-example/simple_reduce.pyx":274
+  /* "nccl-example/simple_reduce.pyx":290
  * 
  *         cdef int m = X_m.shape[0]
  *         cdef int n = X_m.shape[1]             # <<<<<<<<<<<<<<
  * 
  *         self.model_params = out_df
  */
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_X_m, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 274, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_v_X_m, __pyx_n_s_shape); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 290, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
-  __pyx_t_2 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 274, __pyx_L1_error)
+  __pyx_t_2 = __Pyx_GetItemInt(__pyx_t_3, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 290, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 274, __pyx_L1_error)
+  __pyx_t_10 = __Pyx_PyInt_As_int(__pyx_t_2); if (unlikely((__pyx_t_10 == (int)-1) && PyErr_Occurred())) __PYX_ERR(0, 290, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_v_n = __pyx_t_10;
 
-  /* "nccl-example/simple_reduce.pyx":276
+  /* "nccl-example/simple_reduce.pyx":292
  *         cdef int n = X_m.shape[1]
  * 
  *         self.model_params = out_df             # <<<<<<<<<<<<<<
@@ -3707,7 +3998,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
   __Pyx_DECREF(__pyx_v_self->model_params);
   __pyx_v_self->model_params = __pyx_v_out_df;
 
-  /* "nccl-example/simple_reduce.pyx":278
+  /* "nccl-example/simple_reduce.pyx":294
  *         self.model_params = out_df
  * 
  *         self.reduce_result = fit(self.cumlComm,             # <<<<<<<<<<<<<<
@@ -3716,7 +4007,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
  */
   __pyx_v_self->reduce_result = NCCLExample::fit(__pyx_v_self->cumlComm, __pyx_v_self->nWorkers, ((float *)__pyx_v_X_ctype), ((int)__pyx_v_m), ((int)__pyx_v_n), ((int)0), ((float *)__pyx_v_out_ctype));
 
-  /* "nccl-example/simple_reduce.pyx":286
+  /* "nccl-example/simple_reduce.pyx":302
  *                                 <float*>out_ctype)
  * 
  *         if get_rank(self.cumlComm) == 0:             # <<<<<<<<<<<<<<
@@ -3726,19 +4017,19 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
   __pyx_t_5 = ((NCCLExample::get_rank(__pyx_v_self->cumlComm) == 0) != 0);
   if (__pyx_t_5) {
 
-    /* "nccl-example/simple_reduce.pyx":287
+    /* "nccl-example/simple_reduce.pyx":303
  * 
  *         if get_rank(self.cumlComm) == 0:
  *             for i in range(0, out_gpu_mat.shape[1]):             # <<<<<<<<<<<<<<
  *                 out_df[str(i)] = out_gpu_mat[:, i]
  * 
  */
-    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_out_gpu_mat, __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 287, __pyx_L1_error)
+    __pyx_t_2 = __Pyx_PyObject_GetAttrStr(__pyx_v_out_gpu_mat, __pyx_n_s_shape); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
-    __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_2, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 287, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_GetItemInt(__pyx_t_2, 1, long, 1, __Pyx_PyInt_From_long, 0, 0, 1); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 303, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 287, __pyx_L1_error)
+    __pyx_t_2 = PyTuple_New(2); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_2);
     __Pyx_INCREF(__pyx_int_0);
     __Pyx_GIVEREF(__pyx_int_0);
@@ -3746,16 +4037,16 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
     __Pyx_GIVEREF(__pyx_t_3);
     PyTuple_SET_ITEM(__pyx_t_2, 1, __pyx_t_3);
     __pyx_t_3 = 0;
-    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 287, __pyx_L1_error)
+    __pyx_t_3 = __Pyx_PyObject_Call(__pyx_builtin_range, __pyx_t_2, NULL); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 303, __pyx_L1_error)
     __Pyx_GOTREF(__pyx_t_3);
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
     if (likely(PyList_CheckExact(__pyx_t_3)) || PyTuple_CheckExact(__pyx_t_3)) {
       __pyx_t_2 = __pyx_t_3; __Pyx_INCREF(__pyx_t_2); __pyx_t_11 = 0;
       __pyx_t_12 = NULL;
     } else {
-      __pyx_t_11 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 287, __pyx_L1_error)
+      __pyx_t_11 = -1; __pyx_t_2 = PyObject_GetIter(__pyx_t_3); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 303, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_2);
-      __pyx_t_12 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 287, __pyx_L1_error)
+      __pyx_t_12 = Py_TYPE(__pyx_t_2)->tp_iternext; if (unlikely(!__pyx_t_12)) __PYX_ERR(0, 303, __pyx_L1_error)
     }
     __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
     for (;;) {
@@ -3763,17 +4054,17 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
         if (likely(PyList_CheckExact(__pyx_t_2))) {
           if (__pyx_t_11 >= PyList_GET_SIZE(__pyx_t_2)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_3 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 287, __pyx_L1_error)
+          __pyx_t_3 = PyList_GET_ITEM(__pyx_t_2, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 303, __pyx_L1_error)
           #else
-          __pyx_t_3 = PySequence_ITEM(__pyx_t_2, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 287, __pyx_L1_error)
+          __pyx_t_3 = PySequence_ITEM(__pyx_t_2, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 303, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_3);
           #endif
         } else {
           if (__pyx_t_11 >= PyTuple_GET_SIZE(__pyx_t_2)) break;
           #if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-          __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 287, __pyx_L1_error)
+          __pyx_t_3 = PyTuple_GET_ITEM(__pyx_t_2, __pyx_t_11); __Pyx_INCREF(__pyx_t_3); __pyx_t_11++; if (unlikely(0 < 0)) __PYX_ERR(0, 303, __pyx_L1_error)
           #else
-          __pyx_t_3 = PySequence_ITEM(__pyx_t_2, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 287, __pyx_L1_error)
+          __pyx_t_3 = PySequence_ITEM(__pyx_t_2, __pyx_t_11); __pyx_t_11++; if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 303, __pyx_L1_error)
           __Pyx_GOTREF(__pyx_t_3);
           #endif
         }
@@ -3783,7 +4074,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
           PyObject* exc_type = PyErr_Occurred();
           if (exc_type) {
             if (likely(__Pyx_PyErr_GivenExceptionMatches(exc_type, PyExc_StopIteration))) PyErr_Clear();
-            else __PYX_ERR(0, 287, __pyx_L1_error)
+            else __PYX_ERR(0, 303, __pyx_L1_error)
           }
           break;
         }
@@ -3792,14 +4083,14 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
       __Pyx_XDECREF_SET(__pyx_v_i, __pyx_t_3);
       __pyx_t_3 = 0;
 
-      /* "nccl-example/simple_reduce.pyx":288
+      /* "nccl-example/simple_reduce.pyx":304
  *         if get_rank(self.cumlComm) == 0:
  *             for i in range(0, out_gpu_mat.shape[1]):
  *                 out_df[str(i)] = out_gpu_mat[:, i]             # <<<<<<<<<<<<<<
  * 
  * 
  */
-      __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 288, __pyx_L1_error)
+      __pyx_t_3 = PyTuple_New(2); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 304, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
       __Pyx_INCREF(__pyx_slice__6);
       __Pyx_GIVEREF(__pyx_slice__6);
@@ -3807,16 +4098,16 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
       __Pyx_INCREF(__pyx_v_i);
       __Pyx_GIVEREF(__pyx_v_i);
       PyTuple_SET_ITEM(__pyx_t_3, 1, __pyx_v_i);
-      __pyx_t_9 = __Pyx_PyObject_GetItem(__pyx_v_out_gpu_mat, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 288, __pyx_L1_error)
+      __pyx_t_9 = __Pyx_PyObject_GetItem(__pyx_v_out_gpu_mat, __pyx_t_3); if (unlikely(!__pyx_t_9)) __PYX_ERR(0, 304, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_9);
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-      __pyx_t_3 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyUnicode_Type)), __pyx_v_i); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 288, __pyx_L1_error)
+      __pyx_t_3 = __Pyx_PyObject_CallOneArg(((PyObject *)(&PyUnicode_Type)), __pyx_v_i); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 304, __pyx_L1_error)
       __Pyx_GOTREF(__pyx_t_3);
-      if (unlikely(PyObject_SetItem(__pyx_v_out_df, __pyx_t_3, __pyx_t_9) < 0)) __PYX_ERR(0, 288, __pyx_L1_error)
+      if (unlikely(PyObject_SetItem(__pyx_v_out_df, __pyx_t_3, __pyx_t_9) < 0)) __PYX_ERR(0, 304, __pyx_L1_error)
       __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
       __Pyx_DECREF(__pyx_t_9); __pyx_t_9 = 0;
 
-      /* "nccl-example/simple_reduce.pyx":287
+      /* "nccl-example/simple_reduce.pyx":303
  * 
  *         if get_rank(self.cumlComm) == 0:
  *             for i in range(0, out_gpu_mat.shape[1]):             # <<<<<<<<<<<<<<
@@ -3826,7 +4117,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
     }
     __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-    /* "nccl-example/simple_reduce.pyx":286
+    /* "nccl-example/simple_reduce.pyx":302
  *                                 <float*>out_ctype)
  * 
  *         if get_rank(self.cumlComm) == 0:             # <<<<<<<<<<<<<<
@@ -3835,7 +4126,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
  */
   }
 
-  /* "nccl-example/simple_reduce.pyx":291
+  /* "nccl-example/simple_reduce.pyx":307
  * 
  * 
  *         return self             # <<<<<<<<<<<<<<
@@ -3847,7 +4138,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
   __pyx_r = ((PyObject *)__pyx_v_self);
   goto __pyx_L0;
 
-  /* "nccl-example/simple_reduce.pyx":256
+  /* "nccl-example/simple_reduce.pyx":272
  *             return get_rank(self.cumlComm)
  * 
  *     def fit(self, df):             # <<<<<<<<<<<<<<
@@ -3876,7 +4167,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_6fit(struct __pyx_obj_12
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":293
+/* "nccl-example/simple_reduce.pyx":309
  *         return self
  * 
  *     def transform(self, df):             # <<<<<<<<<<<<<<
@@ -3903,7 +4194,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_8transform(struct __pyx_
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("transform", 0);
 
-  /* "nccl-example/simple_reduce.pyx":294
+  /* "nccl-example/simple_reduce.pyx":310
  * 
  *     def transform(self, df):
  *         return self.model_params             # <<<<<<<<<<<<<<
@@ -3915,7 +4206,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_8transform(struct __pyx_
   __pyx_r = __pyx_v_self->model_params;
   goto __pyx_L0;
 
-  /* "nccl-example/simple_reduce.pyx":293
+  /* "nccl-example/simple_reduce.pyx":309
  *         return self
  * 
  *     def transform(self, df):             # <<<<<<<<<<<<<<
@@ -3930,7 +4221,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_8transform(struct __pyx_
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":296
+/* "nccl-example/simple_reduce.pyx":312
  *         return self.model_params
  * 
  *     def fit_transform(self, df):             # <<<<<<<<<<<<<<
@@ -3961,7 +4252,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_10fit_transform(struct _
   PyObject *__pyx_t_4 = NULL;
   __Pyx_RefNannySetupContext("fit_transform", 0);
 
-  /* "nccl-example/simple_reduce.pyx":297
+  /* "nccl-example/simple_reduce.pyx":313
  * 
  *     def fit_transform(self, df):
  *         return self.fit(df).transform(df)             # <<<<<<<<<<<<<<
@@ -3969,7 +4260,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_10fit_transform(struct _
  *     def verify(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_fit); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 297, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(((PyObject *)__pyx_v_self), __pyx_n_s_fit); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 313, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __pyx_t_4 = NULL;
   if (CYTHON_UNPACK_METHODS && likely(PyMethod_Check(__pyx_t_3))) {
@@ -3983,10 +4274,10 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_10fit_transform(struct _
   }
   __pyx_t_2 = (__pyx_t_4) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_4, __pyx_v_df) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_df);
   __Pyx_XDECREF(__pyx_t_4); __pyx_t_4 = 0;
-  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 297, __pyx_L1_error)
+  if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 313, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_transform); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 297, __pyx_L1_error)
+  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_transform); if (unlikely(!__pyx_t_3)) __PYX_ERR(0, 313, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_3);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   __pyx_t_2 = NULL;
@@ -4001,14 +4292,14 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_10fit_transform(struct _
   }
   __pyx_t_1 = (__pyx_t_2) ? __Pyx_PyObject_Call2Args(__pyx_t_3, __pyx_t_2, __pyx_v_df) : __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_v_df);
   __Pyx_XDECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 297, __pyx_L1_error)
+  if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 313, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "nccl-example/simple_reduce.pyx":296
+  /* "nccl-example/simple_reduce.pyx":312
  *         return self.model_params
  * 
  *     def fit_transform(self, df):             # <<<<<<<<<<<<<<
@@ -4030,7 +4321,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_10fit_transform(struct _
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":299
+/* "nccl-example/simple_reduce.pyx":315
  *         return self.fit(df).transform(df)
  * 
  *     def verify(self):             # <<<<<<<<<<<<<<
@@ -4058,7 +4349,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_12verify(struct __pyx_ob
   PyObject *__pyx_t_1 = NULL;
   __Pyx_RefNannySetupContext("verify", 0);
 
-  /* "nccl-example/simple_reduce.pyx":300
+  /* "nccl-example/simple_reduce.pyx":316
  * 
  *     def verify(self):
  *         return self.reduce_result             # <<<<<<<<<<<<<<
@@ -4066,13 +4357,13 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_12verify(struct __pyx_ob
  *     def __del__(self):
  */
   __Pyx_XDECREF(__pyx_r);
-  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->reduce_result); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 300, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyBool_FromLong(__pyx_v_self->reduce_result); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 316, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __pyx_r = __pyx_t_1;
   __pyx_t_1 = 0;
   goto __pyx_L0;
 
-  /* "nccl-example/simple_reduce.pyx":299
+  /* "nccl-example/simple_reduce.pyx":315
  *         return self.fit(df).transform(df)
  * 
  *     def verify(self):             # <<<<<<<<<<<<<<
@@ -4091,7 +4382,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_12verify(struct __pyx_ob
   return __pyx_r;
 }
 
-/* "nccl-example/simple_reduce.pyx":302
+/* "nccl-example/simple_reduce.pyx":318
  *         return self.reduce_result
  * 
  *     def __del__(self):             # <<<<<<<<<<<<<<
@@ -4118,7 +4409,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_14__del__(struct __pyx_o
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__del__", 0);
 
-  /* "nccl-example/simple_reduce.pyx":303
+  /* "nccl-example/simple_reduce.pyx":319
  * 
  *     def __del__(self):
  *         del self.cumlComm             # <<<<<<<<<<<<<<
@@ -4127,7 +4418,7 @@ static PyObject *__pyx_pf_12nccl_example_12SimpleReduce_14__del__(struct __pyx_o
  */
   delete __pyx_v_self->cumlComm;
 
-  /* "nccl-example/simple_reduce.pyx":302
+  /* "nccl-example/simple_reduce.pyx":318
  *         return self.reduce_result
  * 
  *     def __del__(self):             # <<<<<<<<<<<<<<
@@ -4272,19 +4563,27 @@ static void __pyx_tp_dealloc_12nccl_example_nccl(PyObject *o) {
     if (PyObject_CallFinalizerFromDealloc(o)) return;
   }
   #endif
+  {
+    PyObject *etype, *eval, *etb;
+    PyErr_Fetch(&etype, &eval, &etb);
+    ++Py_REFCNT(o);
+    __pyx_pw_12nccl_example_4nccl_3__dealloc__(o);
+    --Py_REFCNT(o);
+    PyErr_Restore(etype, eval, etb);
+  }
   (*Py_TYPE(o)->tp_free)(o);
 }
 
 static PyMethodDef __pyx_methods_12nccl_example_nccl[] = {
-  {"get_unique_id", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_12nccl_example_4nccl_3get_unique_id, METH_VARARGS|METH_KEYWORDS, __pyx_doc_12nccl_example_4nccl_2get_unique_id},
-  {"init", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_12nccl_example_4nccl_5init, METH_VARARGS|METH_KEYWORDS, __pyx_doc_12nccl_example_4nccl_4init},
-  {"destroy", (PyCFunction)__pyx_pw_12nccl_example_4nccl_7destroy, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_6destroy},
-  {"abort", (PyCFunction)__pyx_pw_12nccl_example_4nccl_9abort, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_8abort},
-  {"cu_device", (PyCFunction)__pyx_pw_12nccl_example_4nccl_11cu_device, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_10cu_device},
-  {"user_rank", (PyCFunction)__pyx_pw_12nccl_example_4nccl_13user_rank, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_12user_rank},
-  {"get_comm", (PyCFunction)__pyx_pw_12nccl_example_4nccl_15get_comm, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_14get_comm},
-  {"__reduce_cython__", (PyCFunction)__pyx_pw_12nccl_example_4nccl_17__reduce_cython__, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_16__reduce_cython__},
-  {"__setstate_cython__", (PyCFunction)__pyx_pw_12nccl_example_4nccl_19__setstate_cython__, METH_O, __pyx_doc_12nccl_example_4nccl_18__setstate_cython__},
+  {"get_unique_id", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_12nccl_example_4nccl_5get_unique_id, METH_VARARGS|METH_KEYWORDS, __pyx_doc_12nccl_example_4nccl_4get_unique_id},
+  {"init", (PyCFunction)(void*)(PyCFunctionWithKeywords)__pyx_pw_12nccl_example_4nccl_7init, METH_VARARGS|METH_KEYWORDS, __pyx_doc_12nccl_example_4nccl_6init},
+  {"destroy", (PyCFunction)__pyx_pw_12nccl_example_4nccl_9destroy, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_8destroy},
+  {"abort", (PyCFunction)__pyx_pw_12nccl_example_4nccl_11abort, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_10abort},
+  {"cu_device", (PyCFunction)__pyx_pw_12nccl_example_4nccl_13cu_device, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_12cu_device},
+  {"user_rank", (PyCFunction)__pyx_pw_12nccl_example_4nccl_15user_rank, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_14user_rank},
+  {"get_comm", (PyCFunction)__pyx_pw_12nccl_example_4nccl_17get_comm, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_16get_comm},
+  {"__reduce_cython__", (PyCFunction)__pyx_pw_12nccl_example_4nccl_19__reduce_cython__, METH_NOARGS, __pyx_doc_12nccl_example_4nccl_18__reduce_cython__},
+  {"__setstate_cython__", (PyCFunction)__pyx_pw_12nccl_example_4nccl_21__setstate_cython__, METH_O, __pyx_doc_12nccl_example_4nccl_20__setstate_cython__},
   {0, 0, 0, 0}
 };
 
@@ -4533,15 +4832,19 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_device_array, __pyx_k_device_array, sizeof(__pyx_k_device_array), 0, 0, 1, 1},
   {&__pyx_n_s_device_ctypes_pointer, __pyx_k_device_ctypes_pointer, sizeof(__pyx_k_device_ctypes_pointer), 0, 0, 1, 1},
   {&__pyx_n_s_dtype, __pyx_k_dtype, sizeof(__pyx_k_dtype), 0, 0, 1, 1},
+  {&__pyx_n_s_ep_st, __pyx_k_ep_st, sizeof(__pyx_k_ep_st), 0, 0, 1, 1},
+  {&__pyx_n_s_eps, __pyx_k_eps, sizeof(__pyx_k_eps), 0, 0, 1, 1},
   {&__pyx_n_s_fit, __pyx_k_fit, sizeof(__pyx_k_fit), 0, 0, 1, 1},
   {&__pyx_n_s_float32, __pyx_k_float32, sizeof(__pyx_k_float32), 0, 0, 1, 1},
   {&__pyx_n_s_getHandle, __pyx_k_getHandle, sizeof(__pyx_k_getHandle), 0, 0, 1, 1},
   {&__pyx_n_s_get_comm, __pyx_k_get_comm, sizeof(__pyx_k_get_comm), 0, 0, 1, 1},
+  {&__pyx_n_s_get_ep, __pyx_k_get_ep, sizeof(__pyx_k_get_ep), 0, 0, 1, 1},
   {&__pyx_n_s_get_unique_id, __pyx_k_get_unique_id, sizeof(__pyx_k_get_unique_id), 0, 0, 1, 1},
   {&__pyx_n_s_getstate, __pyx_k_getstate, sizeof(__pyx_k_getstate), 0, 0, 1, 1},
   {&__pyx_n_s_handle, __pyx_k_handle, sizeof(__pyx_k_handle), 0, 0, 1, 1},
   {&__pyx_n_s_handle_2, __pyx_k_handle_2, sizeof(__pyx_k_handle_2), 0, 0, 1, 1},
   {&__pyx_n_s_handle_size_t, __pyx_k_handle_size_t, sizeof(__pyx_k_handle_size_t), 0, 0, 1, 1},
+  {&__pyx_n_s_i, __pyx_k_i, sizeof(__pyx_k_i), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
   {&__pyx_n_s_index, __pyx_k_index, sizeof(__pyx_k_index), 0, 0, 1, 1},
   {&__pyx_n_s_inject_comms_on_handle, __pyx_k_inject_comms_on_handle, sizeof(__pyx_k_inject_comms_on_handle), 0, 0, 1, 1},
@@ -4577,6 +4880,9 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
   {&__pyx_n_s_to_device, __pyx_k_to_device, sizeof(__pyx_k_to_device), 0, 0, 1, 1},
   {&__pyx_n_s_transform, __pyx_k_transform, sizeof(__pyx_k_transform), 0, 0, 1, 1},
+  {&__pyx_n_s_ucp_eps, __pyx_k_ucp_eps, sizeof(__pyx_k_ucp_eps), 0, 0, 1, 1},
+  {&__pyx_n_s_ucp_worker, __pyx_k_ucp_worker, sizeof(__pyx_k_ucp_worker), 0, 0, 1, 1},
+  {&__pyx_n_s_ucp_worker_st, __pyx_k_ucp_worker_st, sizeof(__pyx_k_ucp_worker_st), 0, 0, 1, 1},
   {&__pyx_n_s_uid, __pyx_k_uid, sizeof(__pyx_k_uid), 0, 0, 1, 1},
   {&__pyx_n_s_unique_id, __pyx_k_unique_id, sizeof(__pyx_k_unique_id), 0, 0, 1, 1},
   {&__pyx_n_s_value, __pyx_k_value, sizeof(__pyx_k_value), 0, 0, 1, 1},
@@ -4585,10 +4891,10 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {0, 0, 0, 0, 0, 0, 0}
 };
 static CYTHON_SMALL_CODE int __Pyx_InitCachedBuiltins(void) {
-  __pyx_builtin_staticmethod = __Pyx_GetBuiltinName(__pyx_n_s_staticmethod); if (!__pyx_builtin_staticmethod) __PYX_ERR(0, 135, __pyx_L1_error)
-  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 153, __pyx_L1_error)
+  __pyx_builtin_staticmethod = __Pyx_GetBuiltinName(__pyx_n_s_staticmethod); if (!__pyx_builtin_staticmethod) __PYX_ERR(0, 149, __pyx_L1_error)
+  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 110, __pyx_L1_error)
+  __pyx_builtin_print = __Pyx_GetBuiltinName(__pyx_n_s_print); if (!__pyx_builtin_print) __PYX_ERR(0, 113, __pyx_L1_error)
   __pyx_builtin_TypeError = __Pyx_GetBuiltinName(__pyx_n_s_TypeError); if (!__pyx_builtin_TypeError) __PYX_ERR(1, 2, __pyx_L1_error)
-  __pyx_builtin_range = __Pyx_GetBuiltinName(__pyx_n_s_range); if (!__pyx_builtin_range) __PYX_ERR(0, 287, __pyx_L1_error)
   return 0;
   __pyx_L1_error:;
   return -1;
@@ -4617,39 +4923,39 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_GOTREF(__pyx_tuple__2);
   __Pyx_GIVEREF(__pyx_tuple__2);
 
-  /* "nccl-example/simple_reduce.pyx":243
+  /* "nccl-example/simple_reduce.pyx":259
  *         """
  *         if self.cumlComm == NULL:
  *             print("Must initialize before getting size")             # <<<<<<<<<<<<<<
  *         else:
  *             return get_clique_size(self.cumlComm)
  */
-  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_u_Must_initialize_before_getting_s); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 243, __pyx_L1_error)
+  __pyx_tuple__3 = PyTuple_Pack(1, __pyx_kp_u_Must_initialize_before_getting_s); if (unlikely(!__pyx_tuple__3)) __PYX_ERR(0, 259, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__3);
   __Pyx_GIVEREF(__pyx_tuple__3);
 
-  /* "nccl-example/simple_reduce.pyx":268
+  /* "nccl-example/simple_reduce.pyx":284
  *             out_df = cudf.DataFrame(index=cudf.dataframe.RangeIndex(0, df.shape[0]))
  *         else:
  *             out_gpu_mat = numba.cuda.device_array((1, 1), dtype=np.float32)             # <<<<<<<<<<<<<<
  *             out_df = None
  * 
  */
-  __pyx_tuple__4 = PyTuple_Pack(2, __pyx_int_1, __pyx_int_1); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __pyx_tuple__4 = PyTuple_Pack(2, __pyx_int_1, __pyx_int_1); if (unlikely(!__pyx_tuple__4)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__4);
   __Pyx_GIVEREF(__pyx_tuple__4);
-  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_tuple__4); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 268, __pyx_L1_error)
+  __pyx_tuple__5 = PyTuple_Pack(1, __pyx_tuple__4); if (unlikely(!__pyx_tuple__5)) __PYX_ERR(0, 284, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__5);
   __Pyx_GIVEREF(__pyx_tuple__5);
 
-  /* "nccl-example/simple_reduce.pyx":288
+  /* "nccl-example/simple_reduce.pyx":304
  *         if get_rank(self.cumlComm) == 0:
  *             for i in range(0, out_gpu_mat.shape[1]):
  *                 out_df[str(i)] = out_gpu_mat[:, i]             # <<<<<<<<<<<<<<
  * 
  * 
  */
-  __pyx_slice__6 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__6)) __PYX_ERR(0, 288, __pyx_L1_error)
+  __pyx_slice__6 = PySlice_New(Py_None, Py_None, Py_None); if (unlikely(!__pyx_slice__6)) __PYX_ERR(0, 304, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_slice__6);
   __Pyx_GIVEREF(__pyx_slice__6);
 
@@ -4687,23 +4993,23 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   /* "nccl-example/simple_reduce.pyx":105
  *     return c_str
  * 
- * def inject_comms_on_handle(handle, nccl_inst, size, rank):             # <<<<<<<<<<<<<<
- *     cdef size_t handle_size_t = <size_t>handle.getHandle()
- *     handle_ = <cumlHandle*>handle_size_t
+ * def inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef ucp_ep_h **ucp_eps = <ucp_ep_h**> malloc(len(eps)*sizeof(ucp_ep_h*))
  */
-  __pyx_tuple__11 = PyTuple_Pack(8, __pyx_n_s_handle, __pyx_n_s_nccl_inst, __pyx_n_s_size, __pyx_n_s_rank, __pyx_n_s_handle_size_t, __pyx_n_s_handle_2, __pyx_n_s_nccl_comm_size_t, __pyx_n_s_nccl_comm); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_tuple__11 = PyTuple_Pack(14, __pyx_n_s_handle, __pyx_n_s_nccl_inst, __pyx_n_s_ucp_worker, __pyx_n_s_eps, __pyx_n_s_size, __pyx_n_s_rank, __pyx_n_s_ucp_eps, __pyx_n_s_ep_st, __pyx_n_s_i, __pyx_n_s_ucp_worker_st, __pyx_n_s_handle_size_t, __pyx_n_s_handle_2, __pyx_n_s_nccl_comm_size_t, __pyx_n_s_nccl_comm); if (unlikely(!__pyx_tuple__11)) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple__11);
   __Pyx_GIVEREF(__pyx_tuple__11);
-  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(4, 0, 8, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_nccl_example_simple_reduce_pyx, __pyx_n_s_inject_comms_on_handle, 105, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 105, __pyx_L1_error)
+  __pyx_codeobj__12 = (PyObject*)__Pyx_PyCode_New(6, 0, 14, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple__11, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_nccl_example_simple_reduce_pyx, __pyx_n_s_inject_comms_on_handle, 105, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__12)) __PYX_ERR(0, 105, __pyx_L1_error)
 
-  /* "nccl-example/simple_reduce.pyx":136
+  /* "nccl-example/simple_reduce.pyx":150
  * 
  *     @staticmethod
  *     def get_unique_id():             # <<<<<<<<<<<<<<
  *         return unique_id()
  * 
  */
-  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_nccl_example_simple_reduce_pyx, __pyx_n_s_get_unique_id, 136, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) __PYX_ERR(0, 136, __pyx_L1_error)
+  __pyx_codeobj__13 = (PyObject*)__Pyx_PyCode_New(0, 0, 0, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_nccl_example_simple_reduce_pyx, __pyx_n_s_get_unique_id, 150, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__13)) __PYX_ERR(0, 150, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -4756,21 +5062,21 @@ static int __Pyx_modinit_type_init_code(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_modinit_type_init_code", 0);
   /*--- Type init code ---*/
-  if (PyType_Ready(&__pyx_type_12nccl_example_nccl) < 0) __PYX_ERR(0, 117, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_12nccl_example_nccl) < 0) __PYX_ERR(0, 131, __pyx_L1_error)
   __pyx_type_12nccl_example_nccl.tp_print = 0;
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_12nccl_example_nccl.tp_dictoffset && __pyx_type_12nccl_example_nccl.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_12nccl_example_nccl.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_nccl, (PyObject *)&__pyx_type_12nccl_example_nccl) < 0) __PYX_ERR(0, 117, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_12nccl_example_nccl) < 0) __PYX_ERR(0, 117, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_nccl, (PyObject *)&__pyx_type_12nccl_example_nccl) < 0) __PYX_ERR(0, 131, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_12nccl_example_nccl) < 0) __PYX_ERR(0, 131, __pyx_L1_error)
   __pyx_ptype_12nccl_example_nccl = &__pyx_type_12nccl_example_nccl;
-  if (PyType_Ready(&__pyx_type_12nccl_example_SimpleReduce) < 0) __PYX_ERR(0, 215, __pyx_L1_error)
+  if (PyType_Ready(&__pyx_type_12nccl_example_SimpleReduce) < 0) __PYX_ERR(0, 231, __pyx_L1_error)
   __pyx_type_12nccl_example_SimpleReduce.tp_print = 0;
   if ((CYTHON_USE_TYPE_SLOTS && CYTHON_USE_PYTYPE_LOOKUP) && likely(!__pyx_type_12nccl_example_SimpleReduce.tp_dictoffset && __pyx_type_12nccl_example_SimpleReduce.tp_getattro == PyObject_GenericGetAttr)) {
     __pyx_type_12nccl_example_SimpleReduce.tp_getattro = __Pyx_PyObject_GenericGetAttr;
   }
-  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_SimpleReduce, (PyObject *)&__pyx_type_12nccl_example_SimpleReduce) < 0) __PYX_ERR(0, 215, __pyx_L1_error)
-  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_12nccl_example_SimpleReduce) < 0) __PYX_ERR(0, 215, __pyx_L1_error)
+  if (PyObject_SetAttr(__pyx_m, __pyx_n_s_SimpleReduce, (PyObject *)&__pyx_type_12nccl_example_SimpleReduce) < 0) __PYX_ERR(0, 231, __pyx_L1_error)
+  if (__Pyx_setup_reduce((PyObject*)&__pyx_type_12nccl_example_SimpleReduce) < 0) __PYX_ERR(0, 231, __pyx_L1_error)
   __pyx_ptype_12nccl_example_SimpleReduce = &__pyx_type_12nccl_example_SimpleReduce;
   __Pyx_RefNannyFinishContext();
   return 0;
@@ -5121,41 +5427,41 @@ if (!__Pyx_RefNanny) {
   /* "nccl-example/simple_reduce.pyx":105
  *     return c_str
  * 
- * def inject_comms_on_handle(handle, nccl_inst, size, rank):             # <<<<<<<<<<<<<<
- *     cdef size_t handle_size_t = <size_t>handle.getHandle()
- *     handle_ = <cumlHandle*>handle_size_t
+ * def inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef ucp_ep_h **ucp_eps = <ucp_ep_h**> malloc(len(eps)*sizeof(ucp_ep_h*))
  */
   __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_12nccl_example_3inject_comms_on_handle, NULL, __pyx_n_s_nccl_example); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_inject_comms_on_handle, __pyx_t_2) < 0) __PYX_ERR(0, 105, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
 
-  /* "nccl-example/simple_reduce.pyx":136
+  /* "nccl-example/simple_reduce.pyx":150
  * 
  *     @staticmethod
  *     def get_unique_id():             # <<<<<<<<<<<<<<
  *         return unique_id()
  * 
  */
-  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_12nccl_example_4nccl_3get_unique_id, NULL, __pyx_n_s_nccl_example); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
+  __pyx_t_2 = PyCFunction_NewEx(&__pyx_mdef_12nccl_example_4nccl_5get_unique_id, NULL, __pyx_n_s_nccl_example); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 150, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_12nccl_example_nccl->tp_dict, __pyx_n_s_get_unique_id, __pyx_t_2) < 0) __PYX_ERR(0, 136, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_12nccl_example_nccl->tp_dict, __pyx_n_s_get_unique_id, __pyx_t_2) < 0) __PYX_ERR(0, 150, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
   PyType_Modified(__pyx_ptype_12nccl_example_nccl);
 
-  /* "nccl-example/simple_reduce.pyx":135
- * #             comm_ = NULL
+  /* "nccl-example/simple_reduce.pyx":149
+ *              self.comm = NULL
  * 
  *     @staticmethod             # <<<<<<<<<<<<<<
  *     def get_unique_id():
  *         return unique_id()
  */
-  __Pyx_GetNameInClass(__pyx_t_2, (PyObject *)__pyx_ptype_12nccl_example_nccl, __pyx_n_s_get_unique_id); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 136, __pyx_L1_error)
+  __Pyx_GetNameInClass(__pyx_t_2, (PyObject *)__pyx_ptype_12nccl_example_nccl, __pyx_n_s_get_unique_id); if (unlikely(!__pyx_t_2)) __PYX_ERR(0, 150, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_staticmethod, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 135, __pyx_L1_error)
+  __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_builtin_staticmethod, __pyx_t_2); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 149, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
   __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  if (PyDict_SetItem((PyObject *)__pyx_ptype_12nccl_example_nccl->tp_dict, __pyx_n_s_get_unique_id, __pyx_t_1) < 0) __PYX_ERR(0, 136, __pyx_L1_error)
+  if (PyDict_SetItem((PyObject *)__pyx_ptype_12nccl_example_nccl->tp_dict, __pyx_n_s_get_unique_id, __pyx_t_1) < 0) __PYX_ERR(0, 150, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
   PyType_Modified(__pyx_ptype_12nccl_example_nccl);
 
@@ -5380,6 +5686,93 @@ invalid_keyword:
     #endif
 bad:
     return -1;
+}
+
+/* GetItemInt */
+static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
+    PyObject *r;
+    if (!j) return NULL;
+    r = PyObject_GetItem(o, j);
+    Py_DECREF(j);
+    return r;
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
+                                                              CYTHON_NCP_UNUSED int wraparound,
+                                                              CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    Py_ssize_t wrapped_i = i;
+    if (wraparound & unlikely(i < 0)) {
+        wrapped_i += PyList_GET_SIZE(o);
+    }
+    if ((!boundscheck) || likely(__Pyx_is_valid_index(wrapped_i, PyList_GET_SIZE(o)))) {
+        PyObject *r = PyList_GET_ITEM(o, wrapped_i);
+        Py_INCREF(r);
+        return r;
+    }
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+#else
+    return PySequence_GetItem(o, i);
+#endif
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
+                                                              CYTHON_NCP_UNUSED int wraparound,
+                                                              CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
+    Py_ssize_t wrapped_i = i;
+    if (wraparound & unlikely(i < 0)) {
+        wrapped_i += PyTuple_GET_SIZE(o);
+    }
+    if ((!boundscheck) || likely(__Pyx_is_valid_index(wrapped_i, PyTuple_GET_SIZE(o)))) {
+        PyObject *r = PyTuple_GET_ITEM(o, wrapped_i);
+        Py_INCREF(r);
+        return r;
+    }
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
+#else
+    return PySequence_GetItem(o, i);
+#endif
+}
+static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, int is_list,
+                                                     CYTHON_NCP_UNUSED int wraparound,
+                                                     CYTHON_NCP_UNUSED int boundscheck) {
+#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS && CYTHON_USE_TYPE_SLOTS
+    if (is_list || PyList_CheckExact(o)) {
+        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyList_GET_SIZE(o);
+        if ((!boundscheck) || (likely(__Pyx_is_valid_index(n, PyList_GET_SIZE(o))))) {
+            PyObject *r = PyList_GET_ITEM(o, n);
+            Py_INCREF(r);
+            return r;
+        }
+    }
+    else if (PyTuple_CheckExact(o)) {
+        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyTuple_GET_SIZE(o);
+        if ((!boundscheck) || likely(__Pyx_is_valid_index(n, PyTuple_GET_SIZE(o)))) {
+            PyObject *r = PyTuple_GET_ITEM(o, n);
+            Py_INCREF(r);
+            return r;
+        }
+    } else {
+        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
+        if (likely(m && m->sq_item)) {
+            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
+                Py_ssize_t l = m->sq_length(o);
+                if (likely(l >= 0)) {
+                    i += l;
+                } else {
+                    if (!PyErr_ExceptionMatches(PyExc_OverflowError))
+                        return NULL;
+                    PyErr_Clear();
+                }
+            }
+            return m->sq_item(o, i);
+        }
+    }
+#else
+    if (is_list || PySequence_Check(o)) {
+        return PySequence_GetItem(o, i);
+    }
+#endif
+    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
 }
 
 /* PyFunctionFastCall */
@@ -5909,93 +6302,6 @@ bad:
     return;
 }
 #endif
-
-/* GetItemInt */
-static PyObject *__Pyx_GetItemInt_Generic(PyObject *o, PyObject* j) {
-    PyObject *r;
-    if (!j) return NULL;
-    r = PyObject_GetItem(o, j);
-    Py_DECREF(j);
-    return r;
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_List_Fast(PyObject *o, Py_ssize_t i,
-                                                              CYTHON_NCP_UNUSED int wraparound,
-                                                              CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    Py_ssize_t wrapped_i = i;
-    if (wraparound & unlikely(i < 0)) {
-        wrapped_i += PyList_GET_SIZE(o);
-    }
-    if ((!boundscheck) || likely(__Pyx_is_valid_index(wrapped_i, PyList_GET_SIZE(o)))) {
-        PyObject *r = PyList_GET_ITEM(o, wrapped_i);
-        Py_INCREF(r);
-        return r;
-    }
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-#else
-    return PySequence_GetItem(o, i);
-#endif
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Tuple_Fast(PyObject *o, Py_ssize_t i,
-                                                              CYTHON_NCP_UNUSED int wraparound,
-                                                              CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS
-    Py_ssize_t wrapped_i = i;
-    if (wraparound & unlikely(i < 0)) {
-        wrapped_i += PyTuple_GET_SIZE(o);
-    }
-    if ((!boundscheck) || likely(__Pyx_is_valid_index(wrapped_i, PyTuple_GET_SIZE(o)))) {
-        PyObject *r = PyTuple_GET_ITEM(o, wrapped_i);
-        Py_INCREF(r);
-        return r;
-    }
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-#else
-    return PySequence_GetItem(o, i);
-#endif
-}
-static CYTHON_INLINE PyObject *__Pyx_GetItemInt_Fast(PyObject *o, Py_ssize_t i, int is_list,
-                                                     CYTHON_NCP_UNUSED int wraparound,
-                                                     CYTHON_NCP_UNUSED int boundscheck) {
-#if CYTHON_ASSUME_SAFE_MACROS && !CYTHON_AVOID_BORROWED_REFS && CYTHON_USE_TYPE_SLOTS
-    if (is_list || PyList_CheckExact(o)) {
-        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyList_GET_SIZE(o);
-        if ((!boundscheck) || (likely(__Pyx_is_valid_index(n, PyList_GET_SIZE(o))))) {
-            PyObject *r = PyList_GET_ITEM(o, n);
-            Py_INCREF(r);
-            return r;
-        }
-    }
-    else if (PyTuple_CheckExact(o)) {
-        Py_ssize_t n = ((!wraparound) | likely(i >= 0)) ? i : i + PyTuple_GET_SIZE(o);
-        if ((!boundscheck) || likely(__Pyx_is_valid_index(n, PyTuple_GET_SIZE(o)))) {
-            PyObject *r = PyTuple_GET_ITEM(o, n);
-            Py_INCREF(r);
-            return r;
-        }
-    } else {
-        PySequenceMethods *m = Py_TYPE(o)->tp_as_sequence;
-        if (likely(m && m->sq_item)) {
-            if (wraparound && unlikely(i < 0) && likely(m->sq_length)) {
-                Py_ssize_t l = m->sq_length(o);
-                if (likely(l >= 0)) {
-                    i += l;
-                } else {
-                    if (!PyErr_ExceptionMatches(PyExc_OverflowError))
-                        return NULL;
-                    PyErr_Clear();
-                }
-            }
-            return m->sq_item(o, i);
-        }
-    }
-#else
-    if (is_list || PySequence_Check(o)) {
-        return PySequence_GetItem(o, i);
-    }
-#endif
-    return __Pyx_GetItemInt_Generic(o, PyInt_FromSsize_t(i));
-}
 
 /* PyObjectCall2Args */
 static CYTHON_UNUSED PyObject* __Pyx_PyObject_Call2Args(PyObject* function, PyObject* arg1, PyObject* arg2) {

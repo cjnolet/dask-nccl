@@ -102,14 +102,28 @@ def unique_id():
     free(uid)
     return c_str
 
-def inject_comms_on_handle(handle, nccl_inst, size, rank):
+def inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank):
+
+    cdef ucp_ep_h **ucp_eps = <ucp_ep_h**> malloc(len(eps)*sizeof(ucp_ep_h*))
+
+    cdef size_t ep_st
+    for i in range(len(eps)):
+        if eps[i] is not None:
+            ep_st = <size_t>eps[i].get_ep()
+            print(str(eps[i].get_ep()))
+            ucp_eps[i] = <ucp_ep_h*>ep_st
+        else:
+            ucp_eps[i] = NULL
+    cdef size_t ucp_worker_st = <size_t>ucp_worker
+
+
     cdef size_t handle_size_t = <size_t>handle.getHandle()
     handle_ = <cumlHandle*>handle_size_t
 
     cdef size_t nccl_comm_size_t = <size_t>nccl_inst.get_comm()
     nccl_comm_ = <ncclComm_t*>nccl_comm_size_t
 
-    inject_comms(deref(handle_), deref(nccl_comm_), NULL, NULL, size, rank)
+    inject_comms(deref(handle_), deref(nccl_comm_), <ucp_worker_h*>ucp_worker_st, ucp_eps, size, rank)
     
     
 
@@ -126,11 +140,11 @@ cdef class nccl:
 
     def __dealloc__(self):
 
-#         comm_ = <ncclComm_t*>self.comm
+         comm_ = <ncclComm_t*>self.comm
 
-#         if comm_ != NULL:
-#             free(comm_)
-#             comm_ = NULL
+         if comm_ != NULL:
+             free(self.comm)
+             self.comm = NULL
 
     @staticmethod
     def get_unique_id():
@@ -164,7 +178,8 @@ cdef class nccl:
                 err_str = ncclGetErrorString(result)
                 print("NCCL_ERROR: %s" % err_str)
 
-            free(comm_)
+            free(self.comm)
+            self.comm = NULL
 
     def abort(self):
 
@@ -177,6 +192,7 @@ cdef class nccl:
                 err_str = ncclGetErrorString(result)
                 print("NCCL_ERROR: %s" % err_str)
             free(comm_)
+            self.comm = NULL
 
 
     def cu_device(self):
