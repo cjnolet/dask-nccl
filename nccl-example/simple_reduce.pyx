@@ -126,11 +126,11 @@ cdef class nccl:
 
     def __dealloc__(self):
 
-        comm_ = <ncclComm_t*>self.comm
+#         comm_ = <ncclComm_t*>self.comm
 
-        if comm_ != NULL:
-            free(comm_)
-            comm_ = NULL
+#         if comm_ != NULL:
+#             free(comm_)
+#             comm_ = NULL
 
     @staticmethod
     def get_unique_id():
