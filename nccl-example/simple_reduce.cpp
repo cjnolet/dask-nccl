@@ -3,9 +3,14 @@
 /* BEGIN: Cython Metadata
 {
     "distutils": {
-        "depends": [],
+        "depends": [
+            "nccl-example/ucp_helper.h"
+        ],
         "extra_compile_args": [
             "-std=c++11"
+        ],
+        "include_dirs": [
+            "nccl-example"
         ],
         "language": "c++",
         "libraries": [
@@ -16,7 +21,8 @@
         ],
         "name": "nccl_example",
         "sources": [
-            "nccl-example/simple_reduce.pyx"
+            "nccl-example/simple_reduce.pyx",
+            "nccl-example/ucp_helper.cpp"
         ]
     },
     "module_name": "nccl_example"
@@ -633,7 +639,7 @@ static CYTHON_INLINE float __PYX_NAN() {
 #include <string.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "ucp/api/ucp.h"
+#include "ucp_helper.h"
 #ifdef _OPENMP
 #include <omp.h>
 #endif /* _OPENMP */
@@ -1079,21 +1085,16 @@ static const char __pyx_k_numba[] = "numba";
 static const char __pyx_k_numpy[] = "numpy";
 static const char __pyx_k_import[] = "__import__";
 static const char __pyx_k_worker[] = "worker";
-static const char __pyx_k_localAdd[] = "localAdd";
 static const char __pyx_k_numba_cuda[] = "numba.cuda";
-static const char __pyx_k_addr_length[] = "addr_length";
-static const char __pyx_k_get_address[] = "get_address";
 static const char __pyx_k_nccl_example[] = "nccl_example";
+static const char __pyx_k_ucp_function[] = "ucp_function";
 static const char __pyx_k_dask_distributed[] = "dask.distributed";
 static const char __pyx_k_cline_in_traceback[] = "cline_in_traceback";
 static const char __pyx_k_nccl_example_simple_reduce_pyx[] = "nccl-example/simple_reduce.pyx";
-static PyObject *__pyx_n_s_addr_length;
 static PyObject *__pyx_n_s_cline_in_traceback;
 static PyObject *__pyx_n_s_dask;
 static PyObject *__pyx_n_s_dask_distributed;
-static PyObject *__pyx_n_s_get_address;
 static PyObject *__pyx_n_s_import;
-static PyObject *__pyx_n_s_localAdd;
 static PyObject *__pyx_n_s_main;
 static PyObject *__pyx_n_s_name;
 static PyObject *__pyx_n_s_nccl_example;
@@ -1105,79 +1106,60 @@ static PyObject *__pyx_n_s_numpy;
 static PyObject *__pyx_n_s_os;
 static PyObject *__pyx_n_s_re;
 static PyObject *__pyx_n_s_test;
+static PyObject *__pyx_n_s_ucp_function;
 static PyObject *__pyx_n_s_w;
 static PyObject *__pyx_n_s_worker;
-static PyObject *__pyx_pf_12nccl_example_get_address(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_worker); /* proto */
+static PyObject *__pyx_pf_12nccl_example_ucp_function(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_worker); /* proto */
 static PyObject *__pyx_tuple_;
 static PyObject *__pyx_codeobj__2;
 /* Late includes */
 
-/* "nccl-example/simple_reduce.pyx":35
- *                                          size_t * 	address_length_p)
+/* "nccl-example/simple_reduce.pyx":24
  * 
- * def get_address(worker):             # <<<<<<<<<<<<<<
  * 
- *     cdef ucp_worker_h *w = <ucp_worker_h*><size_t>worker
+ * def ucp_function(worker):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef void *w = <void*><size_t>worker
  */
 
 /* Python wrapper */
-static PyObject *__pyx_pw_12nccl_example_1get_address(PyObject *__pyx_self, PyObject *__pyx_v_worker); /*proto*/
-static char __pyx_doc_12nccl_example_get_address[] = "get_address(worker)";
-static PyMethodDef __pyx_mdef_12nccl_example_1get_address = {"get_address", (PyCFunction)__pyx_pw_12nccl_example_1get_address, METH_O, __pyx_doc_12nccl_example_get_address};
-static PyObject *__pyx_pw_12nccl_example_1get_address(PyObject *__pyx_self, PyObject *__pyx_v_worker) {
+static PyObject *__pyx_pw_12nccl_example_1ucp_function(PyObject *__pyx_self, PyObject *__pyx_v_worker); /*proto*/
+static char __pyx_doc_12nccl_example_ucp_function[] = "ucp_function(worker)";
+static PyMethodDef __pyx_mdef_12nccl_example_1ucp_function = {"ucp_function", (PyCFunction)__pyx_pw_12nccl_example_1ucp_function, METH_O, __pyx_doc_12nccl_example_ucp_function};
+static PyObject *__pyx_pw_12nccl_example_1ucp_function(PyObject *__pyx_self, PyObject *__pyx_v_worker) {
   PyObject *__pyx_r = 0;
   __Pyx_RefNannyDeclarations
-  __Pyx_RefNannySetupContext("get_address (wrapper)", 0);
-  __pyx_r = __pyx_pf_12nccl_example_get_address(__pyx_self, ((PyObject *)__pyx_v_worker));
+  __Pyx_RefNannySetupContext("ucp_function (wrapper)", 0);
+  __pyx_r = __pyx_pf_12nccl_example_ucp_function(__pyx_self, ((PyObject *)__pyx_v_worker));
 
   /* function exit code */
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_12nccl_example_get_address(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_worker) {
-  ucp_worker_h *__pyx_v_w;
-  ucp_address_t **__pyx_v_localAdd;
-  size_t *__pyx_v_addr_length;
+static PyObject *__pyx_pf_12nccl_example_ucp_function(CYTHON_UNUSED PyObject *__pyx_self, PyObject *__pyx_v_worker) {
+  void *__pyx_v_w;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
   size_t __pyx_t_1;
-  __Pyx_RefNannySetupContext("get_address", 0);
+  __Pyx_RefNannySetupContext("ucp_function", 0);
 
-  /* "nccl-example/simple_reduce.pyx":37
- * def get_address(worker):
+  /* "nccl-example/simple_reduce.pyx":26
+ * def ucp_function(worker):
  * 
- *     cdef ucp_worker_h *w = <ucp_worker_h*><size_t>worker             # <<<<<<<<<<<<<<
- * 
- *     cdef ucp_address_t **localAdd = <ucp_address_t**>malloc(sizeof(ucp_address_t*))
- */
-  __pyx_t_1 = __Pyx_PyInt_As_size_t(__pyx_v_worker); if (unlikely((__pyx_t_1 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 37, __pyx_L1_error)
-  __pyx_v_w = ((ucp_worker_h *)((size_t)__pyx_t_1));
-
-  /* "nccl-example/simple_reduce.pyx":39
- *     cdef ucp_worker_h *w = <ucp_worker_h*><size_t>worker
- * 
- *     cdef ucp_address_t **localAdd = <ucp_address_t**>malloc(sizeof(ucp_address_t*))             # <<<<<<<<<<<<<<
- * 
- *     cdef size_t *addr_length = <size_t*>malloc(sizeof(size_t))
- */
-  __pyx_v_localAdd = ((ucp_address_t **)malloc((sizeof(ucp_address_t *))));
-
-  /* "nccl-example/simple_reduce.pyx":41
- *     cdef ucp_address_t **localAdd = <ucp_address_t**>malloc(sizeof(ucp_address_t*))
- * 
- *     cdef size_t *addr_length = <size_t*>malloc(sizeof(size_t))             # <<<<<<<<<<<<<<
+ *     cdef void *w = <void*><size_t>worker             # <<<<<<<<<<<<<<
  * 
  *     with nogil:
  */
-  __pyx_v_addr_length = ((size_t *)malloc((sizeof(size_t))));
+  __pyx_t_1 = __Pyx_PyInt_As_size_t(__pyx_v_worker); if (unlikely((__pyx_t_1 == (size_t)-1) && PyErr_Occurred())) __PYX_ERR(0, 26, __pyx_L1_error)
+  __pyx_v_w = ((void *)((size_t)__pyx_t_1));
 
-  /* "nccl-example/simple_reduce.pyx":43
- *     cdef size_t *addr_length = <size_t*>malloc(sizeof(size_t))
+  /* "nccl-example/simple_reduce.pyx":28
+ *     cdef void *w = <void*><size_t>worker
  * 
  *     with nogil:             # <<<<<<<<<<<<<<
- *         ucp_worker_get_address(deref(w),
- *                               localAdd,
+ *         call_ucp_function(w)
+ * 
  */
   {
       #ifdef WITH_THREAD
@@ -1187,22 +1169,22 @@ static PyObject *__pyx_pf_12nccl_example_get_address(CYTHON_UNUSED PyObject *__p
       #endif
       /*try:*/ {
 
-        /* "nccl-example/simple_reduce.pyx":44
+        /* "nccl-example/simple_reduce.pyx":29
  * 
  *     with nogil:
- *         ucp_worker_get_address(deref(w),             # <<<<<<<<<<<<<<
- *                               localAdd,
- *                               addr_length)
+ *         call_ucp_function(w)             # <<<<<<<<<<<<<<
+ * 
+ * 
  */
-        (void)(ucp_worker_get_address((*__pyx_v_w), __pyx_v_localAdd, __pyx_v_addr_length));
+        call_ucp_function(__pyx_v_w);
       }
 
-      /* "nccl-example/simple_reduce.pyx":43
- *     cdef size_t *addr_length = <size_t*>malloc(sizeof(size_t))
+      /* "nccl-example/simple_reduce.pyx":28
+ *     cdef void *w = <void*><size_t>worker
  * 
  *     with nogil:             # <<<<<<<<<<<<<<
- *         ucp_worker_get_address(deref(w),
- *                               localAdd,
+ *         call_ucp_function(w)
+ * 
  */
       /*finally:*/ {
         /*normal exit:*/{
@@ -1216,19 +1198,19 @@ static PyObject *__pyx_pf_12nccl_example_get_address(CYTHON_UNUSED PyObject *__p
       }
   }
 
-  /* "nccl-example/simple_reduce.pyx":35
- *                                          size_t * 	address_length_p)
+  /* "nccl-example/simple_reduce.pyx":24
  * 
- * def get_address(worker):             # <<<<<<<<<<<<<<
  * 
- *     cdef ucp_worker_h *w = <ucp_worker_h*><size_t>worker
+ * def ucp_function(worker):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef void *w = <void*><size_t>worker
  */
 
   /* function exit code */
   __pyx_r = Py_None; __Pyx_INCREF(Py_None);
   goto __pyx_L0;
   __pyx_L1_error:;
-  __Pyx_AddTraceback("nccl_example.get_address", __pyx_clineno, __pyx_lineno, __pyx_filename);
+  __Pyx_AddTraceback("nccl_example.ucp_function", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
   __pyx_L0:;
   __Pyx_XGIVEREF(__pyx_r);
@@ -1282,13 +1264,10 @@ static struct PyModuleDef __pyx_moduledef = {
 #endif
 
 static __Pyx_StringTabEntry __pyx_string_tab[] = {
-  {&__pyx_n_s_addr_length, __pyx_k_addr_length, sizeof(__pyx_k_addr_length), 0, 0, 1, 1},
   {&__pyx_n_s_cline_in_traceback, __pyx_k_cline_in_traceback, sizeof(__pyx_k_cline_in_traceback), 0, 0, 1, 1},
   {&__pyx_n_s_dask, __pyx_k_dask, sizeof(__pyx_k_dask), 0, 0, 1, 1},
   {&__pyx_n_s_dask_distributed, __pyx_k_dask_distributed, sizeof(__pyx_k_dask_distributed), 0, 0, 1, 1},
-  {&__pyx_n_s_get_address, __pyx_k_get_address, sizeof(__pyx_k_get_address), 0, 0, 1, 1},
   {&__pyx_n_s_import, __pyx_k_import, sizeof(__pyx_k_import), 0, 0, 1, 1},
-  {&__pyx_n_s_localAdd, __pyx_k_localAdd, sizeof(__pyx_k_localAdd), 0, 0, 1, 1},
   {&__pyx_n_s_main, __pyx_k_main, sizeof(__pyx_k_main), 0, 0, 1, 1},
   {&__pyx_n_s_name, __pyx_k_name, sizeof(__pyx_k_name), 0, 0, 1, 1},
   {&__pyx_n_s_nccl_example, __pyx_k_nccl_example, sizeof(__pyx_k_nccl_example), 0, 0, 1, 1},
@@ -1300,6 +1279,7 @@ static __Pyx_StringTabEntry __pyx_string_tab[] = {
   {&__pyx_n_s_os, __pyx_k_os, sizeof(__pyx_k_os), 0, 0, 1, 1},
   {&__pyx_n_s_re, __pyx_k_re, sizeof(__pyx_k_re), 0, 0, 1, 1},
   {&__pyx_n_s_test, __pyx_k_test, sizeof(__pyx_k_test), 0, 0, 1, 1},
+  {&__pyx_n_s_ucp_function, __pyx_k_ucp_function, sizeof(__pyx_k_ucp_function), 0, 0, 1, 1},
   {&__pyx_n_s_w, __pyx_k_w, sizeof(__pyx_k_w), 0, 0, 1, 1},
   {&__pyx_n_s_worker, __pyx_k_worker, sizeof(__pyx_k_worker), 0, 0, 1, 1},
   {0, 0, 0, 0, 0, 0, 0}
@@ -1312,17 +1292,17 @@ static CYTHON_SMALL_CODE int __Pyx_InitCachedConstants(void) {
   __Pyx_RefNannyDeclarations
   __Pyx_RefNannySetupContext("__Pyx_InitCachedConstants", 0);
 
-  /* "nccl-example/simple_reduce.pyx":35
- *                                          size_t * 	address_length_p)
+  /* "nccl-example/simple_reduce.pyx":24
  * 
- * def get_address(worker):             # <<<<<<<<<<<<<<
  * 
- *     cdef ucp_worker_h *w = <ucp_worker_h*><size_t>worker
+ * def ucp_function(worker):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef void *w = <void*><size_t>worker
  */
-  __pyx_tuple_ = PyTuple_Pack(4, __pyx_n_s_worker, __pyx_n_s_w, __pyx_n_s_localAdd, __pyx_n_s_addr_length); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_tuple_ = PyTuple_Pack(2, __pyx_n_s_worker, __pyx_n_s_w); if (unlikely(!__pyx_tuple_)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_tuple_);
   __Pyx_GIVEREF(__pyx_tuple_);
-  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(1, 0, 4, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_nccl_example_simple_reduce_pyx, __pyx_n_s_get_address, 35, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_codeobj__2 = (PyObject*)__Pyx_PyCode_New(1, 0, 2, 0, CO_OPTIMIZED|CO_NEWLOCALS, __pyx_empty_bytes, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_tuple_, __pyx_empty_tuple, __pyx_empty_tuple, __pyx_kp_s_nccl_example_simple_reduce_pyx, __pyx_n_s_ucp_function, 24, __pyx_empty_bytes); if (unlikely(!__pyx_codeobj__2)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_RefNannyFinishContext();
   return 0;
   __pyx_L1_error:;
@@ -1658,16 +1638,16 @@ if (!__Pyx_RefNanny) {
   if (PyDict_SetItem(__pyx_d, __pyx_n_s_numba, __pyx_t_1) < 0) __PYX_ERR(0, 14, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
-  /* "nccl-example/simple_reduce.pyx":35
- *                                          size_t * 	address_length_p)
+  /* "nccl-example/simple_reduce.pyx":24
  * 
- * def get_address(worker):             # <<<<<<<<<<<<<<
  * 
- *     cdef ucp_worker_h *w = <ucp_worker_h*><size_t>worker
+ * def ucp_function(worker):             # <<<<<<<<<<<<<<
+ * 
+ *     cdef void *w = <void*><size_t>worker
  */
-  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_12nccl_example_1get_address, NULL, __pyx_n_s_nccl_example); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 35, __pyx_L1_error)
+  __pyx_t_1 = PyCFunction_NewEx(&__pyx_mdef_12nccl_example_1ucp_function, NULL, __pyx_n_s_nccl_example); if (unlikely(!__pyx_t_1)) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_GOTREF(__pyx_t_1);
-  if (PyDict_SetItem(__pyx_d, __pyx_n_s_get_address, __pyx_t_1) < 0) __PYX_ERR(0, 35, __pyx_L1_error)
+  if (PyDict_SetItem(__pyx_d, __pyx_n_s_ucp_function, __pyx_t_1) < 0) __PYX_ERR(0, 24, __pyx_L1_error)
   __Pyx_DECREF(__pyx_t_1); __pyx_t_1 = 0;
 
   /* "nccl-example/simple_reduce.pyx":1
