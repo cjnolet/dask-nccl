@@ -4,6 +4,8 @@
 # cython: language_level = 3
 from cuml.common.handle import Handle
 
+from cpython cimport array
+import array
 
 import dask.distributed
 from libcpp cimport bool
@@ -55,12 +57,6 @@ cdef extern from "nccl.h":
 
     ncclResult_t ncclCommDestroy(ncclComm_t comm)
 
-cdef extern from "ucp/api/ucp.h":
-    ctypedef struct ucp_ep_h:
-        pass
-
-    ctypedef struct ucp_worker_h:
-        pass
 
 
 cdef extern from "common/cuML_comms_impl.cpp" namespace "MLCommon":
@@ -70,19 +66,17 @@ cdef extern from "cuML.hpp" namespace "ML" nogil:
     cdef cppclass cumlHandle:
         cumlHandle() except +
 
-cdef extern from "cuML_comms.hpp":
-    void inject_comms(cumlHandle handle, ncclComm_t comm, ucp_worker_h *ucp_worker, ucp_ep_h **eps, int size, int rank);
-
-
 cdef extern from "simple_reduce_api.h" namespace "NCCLExample":
 
-    const cumlCommunicator * build_comm(ncclComm_t comm, ucp_worker_h *ucp_worker, ucp_ep_h **ucp_eps, int workerId, int nWorkers)
-
+    void inject_comms_py(cumlHandle *handle, ncclComm_t comm, void *ucp_worker, void *eps, int size, int rank)
+    
     int get_clique_size(const cumlCommunicator * communicator)
 
     int get_rank(const cumlCommunicator * communicator)
+    
+    void test_ep(void *ep);
 
-    bool fit(const cumlCommunicator * communicator,
+    bool fit(cumlHandle &handle,
                                     int nWorkers,
                                     float * sendbuf,
                                     int M,
@@ -102,20 +96,23 @@ def unique_id():
     free(uid)
     return c_str
 
+
+def test_endpoint(ep):
+    test_ep(<void*><size_t>ep)
+
 def inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank):
 
-    cdef ucp_ep_h **ucp_eps = <ucp_ep_h**> malloc(len(eps)*sizeof(ucp_ep_h*))
+    cdef size_t *ucp_eps = <size_t*> malloc(len(eps)*sizeof(size_t))
 
     cdef size_t ep_st
     for i in range(len(eps)):
         if eps[i] is not None:
-            ep_st = <size_t>eps[i].get_ep()
-            print(str(eps[i].get_ep()))
-            ucp_eps[i] = <ucp_ep_h*>ep_st
+            ucp_eps[i] = <size_t>eps[i].get_ep()
+            test_ep(<void*><size_t>eps[i].get_ep())
         else:
-            ucp_eps[i] = NULL
-    cdef size_t ucp_worker_st = <size_t>ucp_worker
+            ucp_eps[i] = 0
 
+    cdef void* ucp_worker_st = <void*><size_t>ucp_worker
 
     cdef size_t handle_size_t = <size_t>handle.getHandle()
     handle_ = <cumlHandle*>handle_size_t
@@ -123,9 +120,7 @@ def inject_comms_on_handle(handle, nccl_inst, ucp_worker, eps, size, rank):
     cdef size_t nccl_comm_size_t = <size_t>nccl_inst.get_comm()
     nccl_comm_ = <ncclComm_t*>nccl_comm_size_t
 
-    inject_comms(deref(handle_), deref(nccl_comm_), <ucp_worker_h*>ucp_worker_st, ucp_eps, size, rank)
-    
-    
+    inject_comms_py(handle_, deref(nccl_comm_), <void*>ucp_worker_st, <void*>ucp_eps, size, rank)
 
 
 cdef class nccl:
@@ -228,46 +223,12 @@ cdef class nccl:
     def get_comm(self):
         return <size_t>self.comm
 
-cdef class SimpleReduce:
+class SimpleReduce:
     
-    cdef const cumlCommunicator *cumlComm
-    cdef int workerId
-    cdef int nWorkers
-
-    cdef bool reduce_result
-    cdef object model_params
-
-    def __cinit__(self, workerId, nWorkers, cuml_comm = None):
+    def __init__(self, workerId, nWorkers, handle):
         self.workerId = workerId
         self.nWorkers = nWorkers
-
-        cdef size_t temp_comm
-        if cuml_comm is not None:
-            temp_comm = <size_t>cuml_comm
-            comm_ = <ncclComm_t*>temp_comm
-
-            self.cumlComm = build_comm(deref(comm_), NULL, NULL, self.workerId, self.nWorkers)
-        else:
-            self.cumlComm = NULL
-
-
-    def get_clique_size(self):
-        """
-        Simple test that cumlCommunicator is working properly
-        """
-        if self.cumlComm == NULL:
-            print("Must initialize before getting size")
-        else:
-            return get_clique_size(self.cumlComm)
-
-    def get_rank(self):
-        """
-        Simple test that cumlCommunicator is working properly
-        """
-        if self.cumlComm == NULL:
-            print("Must initialize before getting size")
-        else:
-            return get_rank(self.cumlComm)
+        self.handle = handle
 
     def fit(self, df):
         """
@@ -276,7 +237,7 @@ cdef class SimpleReduce:
         cdef object X_m = df.as_gpu_matrix()
         cdef uintptr_t X_ctype = X_m.device_ctypes_pointer.value
 
-        if get_rank(self.cumlComm) == 0:
+        if self.workerId == 0:
             out_gpu_mat = numba.cuda.to_device(np.zeros((df.shape[0], df.shape[1]),
                                                         dtype=np.float32, order="F"))
             out_df = cudf.DataFrame(index=cudf.dataframe.RangeIndex(0, df.shape[0]))
@@ -290,8 +251,10 @@ cdef class SimpleReduce:
         cdef int n = X_m.shape[1]
 
         self.model_params = out_df
+        
+        cdef cumlHandle *handle_ = <cumlHandle*><size_t>self.handle.getHandle()
 
-        self.reduce_result = fit(self.cumlComm,
+        self.reduce_result = fit(handle_[0],
                                 self.nWorkers,
                                 <float*>X_ctype,
                                 <int>m,
@@ -299,18 +262,12 @@ cdef class SimpleReduce:
                                 <int>0,
                                 <float*>out_ctype)
 
-        if get_rank(self.cumlComm) == 0:
+        if self.workerId == 0:
             for i in range(0, out_gpu_mat.shape[1]):
                 out_df[str(i)] = out_gpu_mat[:, i]
 
 
         return self
-
-    def transform(self, df):
-        return self.model_params
-
-    def fit_transform(self, df):
-        return self.fit(df).transform(df)
 
     def verify(self):
         return self.reduce_result

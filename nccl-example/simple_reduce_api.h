@@ -123,11 +123,14 @@ int get_clique_size(const MLCommon::cumlCommunicator *communicator);
 
 int get_rank(const MLCommon::cumlCommunicator *communicator);
 
-bool fit(const MLCommon::cumlCommunicator *communicator,
+bool fit(ML::cumlHandle &handle,
     int nWorkers, float *sendbuf, int M, int N, int root_rank, float *recvbuff);
 
 void get_unique_id(char *uid);
 
 void ncclUniqueIdFromChar(ncclUniqueId *id, char *uniqueId);
+    
+void test_ep(void *ep);
+void inject_comms_py(ML::cumlHandle *handle, ncclComm_t comm, void *ucp_worker, void *eps, int size, int rank);
 
 }; // end namespace NCCLExample
